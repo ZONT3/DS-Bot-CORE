@@ -126,6 +126,18 @@ public class Commands {
             else         return getPrefixOpts().contains(o);
         }
 
+        public String getParamOpt(String o, boolean prefix) {
+            checkBuild();
+            List<String> opts;
+            if (!prefix) opts = this.opts;
+            else opts = getPrefixOpts();
+
+            for (String opt: opts)
+                if (opt.startsWith(o + "="))
+                    return opt.replaceFirst(o + "=", "");
+            return "";
+        }
+
         public ArrayList<String> getArgs() {
             checkBuild();
             return args;
