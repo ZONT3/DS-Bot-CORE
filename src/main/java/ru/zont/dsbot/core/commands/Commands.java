@@ -2,10 +2,11 @@ package ru.zont.dsbot.core.commands;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.tools.Configs;
 import ru.zont.dsbot.core.ZDSBot;
+import ru.zont.dsbot.core.tools.Configs;
 
 import java.util.*;
+import java.util.regex.Pattern;
 
 public class Commands {
 
@@ -178,8 +179,12 @@ public class Commands {
         }
 
         public String stripPrefixOpts() {
-            if (!raw.startsWith("-") || raw.startsWith("---")) return raw;
-            return raw.replaceFirst("(--?[^ ]+ +)+", "");
+            String raw = getRaw();
+            for (String s: ArgumentTokenizer.tokenize(getRaw())) {
+                if (!isOption(s)) break;
+                raw = raw.replaceFirst("\"?" + Pattern.quote(s) + "\"?", "");
+            }
+            return raw.startsWith(" ") ? raw.replaceFirst(" +", "") : raw;
         }
 
         @NotNull
