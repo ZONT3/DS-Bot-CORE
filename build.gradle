@@ -1,0 +1,35 @@
+plugins {
+    id 'java'
+}
+
+group 'ru.zont'
+version '1.0'
+
+repositories {
+    mavenCentral()
+    jcenter()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.6.0'
+    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
+    implementation 'net.dv8tion:JDA:4.2.0_209'
+    implementation 'com.google.code.gson:gson:2.8.6'
+    implementation 'org.reflections:reflections:0.9.12'
+    implementation 'net.usrlib:material-color:0.1'
+    compile group: 'com.github.theholywaffle', name: 'teamspeak3-api', version: '1.2.0'
+    testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
+    // https://mvnrepository.com/artifact/com.google.api-client/google-api-client
+    compile group: 'com.google.api-client', name: 'google-api-client', version: '1.31.1'
+    // https://mvnrepository.com/artifact/com.google.apis/google-api-services-youtube
+    compile group: 'com.google.apis', name: 'google-api-services-youtube', version: 'v3-rev222-1.25.0'
+    // https://mvnrepository.com/artifact/org.jsoup/jsoup
+    compile group: 'org.jsoup', name: 'jsoup', version: '1.13.1'
+    compile group: 'com.github.twitch4j', name: 'twitch4j', version: '1.1.2'
+    // https://mvnrepository.com/artifact/commons-io/commons-io
+    compile group: 'commons-io', name: 'commons-io', version: '2.8.0'
+}
+
+test {
+    useJUnitPlatform()
+}
