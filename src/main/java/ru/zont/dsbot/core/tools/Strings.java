@@ -1,4 +1,6 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.tools;
+
+import ru.zont.dsbot.core.UTF8Control;
 
 import java.util.ResourceBundle;
 

@@ -14,6 +14,12 @@ import org.reflections.scanners.SubTypesScanner;
 import org.reflections.util.ClasspathHelper;
 import org.reflections.util.ConfigurationBuilder;
 import org.reflections.util.FilterBuilder;
+import ru.zont.dsbot.core.commands.CommandAdapter;
+import ru.zont.dsbot.core.handler.LStatusHandler;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.tools.LOG;
+import ru.zont.dsbot.core.tools.Messages;
+import ru.zont.dsbot.core.tools.Strings;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;

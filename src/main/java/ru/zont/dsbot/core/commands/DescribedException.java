@@ -1,4 +1,4 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.commands;
 
 public class DescribedException extends RuntimeException {
     private final String title;

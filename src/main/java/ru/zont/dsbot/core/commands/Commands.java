@@ -1,7 +1,9 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.commands;
 
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.ZDSBot;
 
 import java.util.*;
 

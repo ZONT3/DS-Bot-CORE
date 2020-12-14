@@ -1,4 +1,4 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.handler;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.GuildChannel;
@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.tools.Tools;
 
 import javax.annotation.Nonnull;
 

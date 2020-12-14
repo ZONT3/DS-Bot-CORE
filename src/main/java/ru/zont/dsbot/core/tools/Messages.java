@@ -1,4 +1,4 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.tools;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;

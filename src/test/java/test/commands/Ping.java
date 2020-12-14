@@ -4,8 +4,8 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot.core.CommandAdapter;
-import ru.zont.dsbot.core.Strings;
+import ru.zont.dsbot.core.commands.CommandAdapter;
+import ru.zont.dsbot.core.tools.Strings;
 import ru.zont.dsbot.core.ZDSBot;
 
 import java.util.Properties;

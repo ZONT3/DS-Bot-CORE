@@ -1,4 +1,4 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.tools;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -1,4 +1,4 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.commands;
 
 /*BEGIN_COPYRIGHT_BLOCK
  *

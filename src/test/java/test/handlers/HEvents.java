@@ -1,8 +1,8 @@
 package test.handlers;
 
 import net.dv8tion.jda.api.events.ReadyEvent;
-import ru.zont.dsbot.core.LOG;
-import ru.zont.dsbot.core.LStatusHandler;
+import ru.zont.dsbot.core.tools.LOG;
+import ru.zont.dsbot.core.handler.LStatusHandler;
 
 
 public class HEvents extends LStatusHandler {

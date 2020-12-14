@@ -1,13 +1,17 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot.core.commands;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.tools.Configs;
+import ru.zont.dsbot.core.tools.LOG;
+import ru.zont.dsbot.core.tools.Messages;
+import ru.zont.dsbot.core.ZDSBot;
 
 import java.io.File;
 import java.util.Properties;
 
-import static ru.zont.dsbot.core.Strings.*;
+import static ru.zont.dsbot.core.tools.Strings.*;
 
 public abstract class CommandAdapter {
     private Properties propertiesCache = null;
