@@ -91,7 +91,7 @@ public class Messages {
         msg.addReaction("\u2705").queue();
     }
 
-    private static Message pushEveryone(MessageEmbed build) {
+    public static Message pushEveryone(MessageEmbed build) {
         return new MessageBuilder()
                 .append("@everyone")
                 .setEmbed(build)

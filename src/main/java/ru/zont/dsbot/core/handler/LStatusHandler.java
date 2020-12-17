@@ -6,6 +6,7 @@ import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.ReadyEvent;
 import net.dv8tion.jda.api.hooks.ListenerAdapter;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.dsbot.core.tools.Tools;
 
 import javax.annotation.Nonnull;
@@ -13,36 +14,45 @@ import javax.annotation.Nonnull;
 
 public abstract class LStatusHandler extends ListenerAdapter {
     private CallerThread callerThread;
-    private JDA jda;
+    private final ZDSBot bot;
 
     public abstract void prepare(ReadyEvent event) throws Exception;
     public abstract void update() throws Exception;
     public abstract long getPeriod();
 
-    @Override
+    public LStatusHandler(ZDSBot bot) {
+        this.bot = bot;
+    }
+
+    public ZDSBot getBot() {
+        return bot;
+    }
+
+    public JDA getJda() {
+        return bot.jda;
+    }
+
+        @Override
     public void onReady(@Nonnull ReadyEvent event) {
-        jda = event.getJDA();
         try {
             prepare(event);
         } catch (Throwable e) {
-            Tools.reportError(e, getClass(), getJda());
+            Tools.reportError(e, getClass(), bot.jda);
         }
         callerThread = new CallerThread();
         callerThread.start();
     }
 
-    public JDA getJda() { return jda; }
-
     public CallerThread getCallerThread() { return callerThread; }
 
     @NotNull
     public GuildChannel tryFindChannel(String channelID) throws NullPointerException {
-        return Tools.tryFindChannel(channelID, getJda());
+        return Tools.tryFindChannel(channelID, bot.jda);
     }
 
     @NotNull
     public MessageChannel tryFindTChannel(String channelID) throws NullPointerException {
-        return Tools.tryFindTChannel(channelID, getJda());
+        return Tools.tryFindTChannel(channelID, bot.jda);
     }
 
     @SuppressWarnings("BusyWait")
@@ -57,7 +67,7 @@ public abstract class LStatusHandler extends ListenerAdapter {
             while (!interrupted()) {
                 try { update(); }
                 catch (Exception e) {
-                    Tools.reportError(e, getClass(), getJda());
+                    Tools.reportError(e, getClass(), bot.jda);
                 }
                 try { sleep(getPeriod()); }
                 catch (InterruptedException e) {
