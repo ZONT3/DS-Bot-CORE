@@ -32,13 +32,15 @@ public abstract class LStatusHandler extends ListenerAdapter {
         return bot.jda;
     }
 
-        @Override
+    @Override
     public void onReady(@Nonnull ReadyEvent event) {
         try {
             prepare(event);
         } catch (Throwable e) {
             Tools.reportError(e, getClass(), bot.jda);
         }
+
+        if (getPeriod() <= 0) return;
         callerThread = new CallerThread();
         callerThread.start();
     }

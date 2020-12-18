@@ -1,9 +1,8 @@
 package ru.zont.dsbot.core.tools;
 
 import net.dv8tion.jda.api.JDA;
-import net.dv8tion.jda.api.entities.Guild;
-import net.dv8tion.jda.api.entities.GuildChannel;
-import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.entities.*;
+import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.NotNull;
 
 import java.io.*;
@@ -21,6 +20,31 @@ public class Tools {
         }
         if (channel == null) throw new NullPointerException("Cannot find channel");
         return channel;
+    }
+
+    public static Role tryFindRole(String roleID, JDA jda) {
+        Role role = null;
+        for (Guild guild: jda.getGuilds()) {
+            role = guild.getRoleById(roleID);
+            if (role != null) break;
+        }
+        if (role == null) throw new NullPointerException("Cannot find role");
+        return role;
+    }
+
+    @NotNull
+    public static Message tryFindMessage(String messageID, JDA jda) throws NullPointerException {
+        Message msg = null;
+        for (Guild guild: jda.getGuilds()) {
+            for (TextChannel channel: guild.getTextChannels()) {
+                try {
+                    msg = channel.retrieveMessageById(messageID).complete();
+                } catch (ErrorResponseException ignored) { }
+            }
+            if (msg != null) break;
+        }
+        if (msg == null) throw new NullPointerException("Cannot find msg");
+        return msg;
     }
 
     @NotNull

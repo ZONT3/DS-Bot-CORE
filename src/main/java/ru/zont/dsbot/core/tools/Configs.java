@@ -38,7 +38,7 @@ public class Configs {
     }
 
     private static void checkIDStatement(String id) {
-        if (id.equals("0")) throw new IllegalStateException("ID not stated!");
+        if (id == null || id.equals("0")) throw new IllegalStateException("ID not stated!");
     }
 
     public static void storeGlobalProps(Properties properties) {

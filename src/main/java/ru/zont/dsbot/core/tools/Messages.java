@@ -10,6 +10,9 @@ import java.time.Instant;
 import java.util.List;
 
 public class Messages {
+
+    public static final String EMOJI_OK = "\u2705";
+
     public static MessageEmbed error(String title, String description) {
         return new EmbedBuilder()
                 .setTitle(title)
@@ -88,7 +91,7 @@ public class Messages {
     }
 
     public static void addOK(Message msg) {
-        msg.addReaction("\u2705").queue();
+        msg.addReaction(EMOJI_OK).queue();
     }
 
     public static Message pushEveryone(MessageEmbed build) {
