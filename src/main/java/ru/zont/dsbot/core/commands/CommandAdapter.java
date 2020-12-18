@@ -138,7 +138,7 @@ public abstract class CommandAdapter {
         }
     }
 
-    protected static class UserInvalidArgumentException extends RuntimeException {
+    public static class UserInvalidArgumentException extends RuntimeException {
         boolean printSyntax = true;
         public UserInvalidArgumentException(String s) {
             super(s);
