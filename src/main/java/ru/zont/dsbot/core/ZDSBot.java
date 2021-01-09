@@ -63,12 +63,14 @@ public class ZDSBot extends ListenerAdapter {
     }
 
     private LStatusHandler[] registerHandlers() {
+        if (handlersPkg.isEmpty()) return new LStatusHandler[0];
         return new Register<LStatusHandler>().register(LStatusHandler.class, handlersPkg,
                 h -> LOG.d("Successfully registered SH " + h.getClass().getSimpleName()))
                 .toArray(new LStatusHandler[0]);
     }
 
     private CommandAdapter[] registerCommands() {
+        if (commandsPkg.isEmpty()) return new CommandAdapter[0];
         return new Register<CommandAdapter>().register(CommandAdapter.class, commandsPkg,
                 c -> LOG.d("Successfully registered command " + c.getCommandName()))
                 .toArray(new CommandAdapter[0]);
@@ -88,8 +90,7 @@ public class ZDSBot extends ListenerAdapter {
                     .setScanners(new SubTypesScanner(false /* don't exclude Object.class */), new ResourcesScanner())
                     .setUrls(ClasspathHelper.forClassLoader(classLoadersList.toArray(new ClassLoader[0])))
                     .filterInputsBy(new FilterBuilder().include(FilterBuilder.prefix(pkg))));
-            Set<Class<? extends T>> allClasses =
-                    reflections.getSubTypesOf(cls);
+            Set<Class<? extends T>> allClasses = reflections.getSubTypesOf(cls);
 
             ArrayList<T> res = new ArrayList<>();
             for (Class<? extends T> klass: allClasses) {

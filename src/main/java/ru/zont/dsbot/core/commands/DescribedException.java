@@ -10,6 +10,12 @@ public class DescribedException extends RuntimeException {
         this.description = description;
     }
 
+    public DescribedException(String title, String description, Throwable cause) {
+        super(description, cause);
+        this.title = title;
+        this.description = description;
+    }
+
     public String getTitle() {
         return title;
     }

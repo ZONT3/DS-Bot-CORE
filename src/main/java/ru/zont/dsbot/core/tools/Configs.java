@@ -92,8 +92,11 @@ public class Configs {
     }
 
     public static void writeDefaultGlobalProps() {
-        if (!new File(DIR_PROPS, "global.properties").exists())
+        final File file = new File(DIR_PROPS, "global.properties");
+        if (!file.exists()) {
+            if (!file.getParentFile().mkdirs()) throw new RuntimeException("Cannot mkdirs");
             storeGlobalProps(getGlobalPropsDefaults());
+        }
     }
 
     public static String getPrefix() {

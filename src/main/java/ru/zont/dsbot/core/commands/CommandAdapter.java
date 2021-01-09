@@ -122,7 +122,10 @@ public abstract class CommandAdapter {
                     .build()).queue();
         } catch (DescribedException e) {
             e.printStackTrace();
-            Messages.printError(event.getChannel(), e.getTitle(), e.getDescription());
+            if (e.getCause() == null)
+                Messages.printError(event.getChannel(), e.getTitle(), e.getDescription());
+            else Messages.printError(event.getChannel(), e.getTitle(),
+                    String.format("%s\n\n%s", e.getDescription(), Messages.describeException(e.getCause())));
         }
     }
 
