@@ -17,6 +17,7 @@ public class Configs {
         setProperty("command_prefix", "z.");
         setProperty("channel_log", "0");
         setProperty("TA_IDS", "331524458806247426");
+        setProperty("ALLOWED_SERVERS", "331526118635208716");
     }};
 
     public static String getID(String channel) {

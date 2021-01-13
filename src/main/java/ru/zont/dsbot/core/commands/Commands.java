@@ -199,6 +199,13 @@ public class Commands {
             return args.get(i);
         }
 
+        public boolean argEquals(List<String> values, int index) {
+            for (String comm: values)
+                if (comm.equalsIgnoreCase(getArg(index)))
+                    return true;
+            return false;
+        }
+
         private class Iter implements Iterator<String> {
             private int pointer = 0;
 

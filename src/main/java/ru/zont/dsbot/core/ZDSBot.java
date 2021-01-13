@@ -17,7 +17,6 @@ import org.reflections.util.FilterBuilder;
 import ru.zont.dsbot.core.commands.CommandAdapter;
 import ru.zont.dsbot.core.handler.LStatusHandler;
 import ru.zont.dsbot.core.tools.Configs;
-import ru.zont.dsbot.core.tools.LOG;
 import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.dsbot.core.tools.Strings;
 
@@ -28,7 +27,6 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Consumer;
 
 public class ZDSBot extends ListenerAdapter {
     public static final String ZONT_MENTION = "<@331524458806247426>";
@@ -36,7 +34,7 @@ public class ZDSBot extends ListenerAdapter {
     public final String version;
     public final String commandsPkg;
     public final String handlersPkg;
-    public final CommandAdapter[] commandAdapters;
+    public CommandAdapter[] commandAdapters;
     public final LStatusHandler[] statusHandlers;
     public JDA jda;
 
@@ -64,15 +62,13 @@ public class ZDSBot extends ListenerAdapter {
 
     private LStatusHandler[] registerHandlers() {
         if (handlersPkg.isEmpty()) return new LStatusHandler[0];
-        return new Register<LStatusHandler>().register(LStatusHandler.class, handlersPkg,
-                h -> LOG.d("Successfully registered SH " + h.getClass().getSimpleName()))
+        return new Register<LStatusHandler>().register(LStatusHandler.class, handlersPkg)
                 .toArray(new LStatusHandler[0]);
     }
 
     private CommandAdapter[] registerCommands() {
         if (commandsPkg.isEmpty()) return new CommandAdapter[0];
-        return new Register<CommandAdapter>().register(CommandAdapter.class, commandsPkg,
-                c -> LOG.d("Successfully registered command " + c.getCommandName()))
+        return new Register<CommandAdapter>().register(CommandAdapter.class, commandsPkg)
                 .toArray(new CommandAdapter[0]);
     }
 
@@ -81,7 +77,7 @@ public class ZDSBot extends ListenerAdapter {
     }
     private class Register<T> {
 
-        private ArrayList<T> register(Class<T> cls, String pkg, Consumer<T> onSuccess) {
+        private ArrayList<T> register(Class<T> cls, String pkg) {
             List<ClassLoader> classLoadersList = new LinkedList<>();
             classLoadersList.add(ClasspathHelper.contextClassLoader());
             classLoadersList.add(ClasspathHelper.staticClassLoader());
@@ -99,8 +95,6 @@ public class ZDSBot extends ListenerAdapter {
                     T instance = klass.getDeclaredConstructor(ZDSBot.class)
                             .newInstance(ZDSBot.this);
                     res.add(instance);
-                    if (onSuccess != null)
-                        onSuccess.accept(instance);
                 } catch (Exception e) {
                     e.printStackTrace();
                 }

@@ -55,4 +55,9 @@ public class Ping extends CommandAdapter {
                         .build()
         ).queue());
     }
+
+    @Override
+    public boolean checkPermission(MessageReceivedEvent event) {
+        return true;
+    }
 }

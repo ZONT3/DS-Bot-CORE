@@ -15,7 +15,7 @@ dependencies {
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine'
     implementation 'net.dv8tion:JDA:4.2.0_209'
     implementation 'com.google.code.gson:gson:2.8.6'
-    implementation 'org.reflections:reflections:0.9.12'
+    implementation 'org.reflections:reflections:0.9.11'
     implementation 'net.usrlib:material-color:0.1'
     testCompile group: 'org.slf4j', name: 'slf4j-simple', version: '1.7.30'
     // https://mvnrepository.com/artifact/commons-io/commons-io

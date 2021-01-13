@@ -4,6 +4,7 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.commands.Commands;
 
 import java.io.*;
 
@@ -59,8 +60,13 @@ public class Tools {
     }
 
     public static void reportError(Throwable e, Class<?> klass, JDA jda) {
-        e.printStackTrace(); // TODO smart printing
+        e.printStackTrace();
         Messages.tryPrintError(STR.getString("err.unexpected"), Messages.describeException(klass, e), jda);
+    }
+
+    public static boolean guildAllowed(Guild guild) {
+        final String p = Configs.getGlobalProps().getProperty("ALLOWED_SERVERS");
+        return p == null || p.contains(guild.getId());
     }
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})

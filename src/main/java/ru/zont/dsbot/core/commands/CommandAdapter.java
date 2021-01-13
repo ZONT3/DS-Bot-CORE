@@ -7,6 +7,7 @@ import ru.zont.dsbot.core.tools.Configs;
 import ru.zont.dsbot.core.tools.LOG;
 import ru.zont.dsbot.core.tools.Messages;
 import ru.zont.dsbot.core.ZDSBot;
+import ru.zont.dsbot.core.tools.Tools;
 
 import java.io.File;
 import java.util.Properties;
@@ -28,9 +29,11 @@ public abstract class CommandAdapter {
 
     protected abstract Properties getPropsDefaults();
 
-    public boolean checkPermission(MessageReceivedEvent event) { return true; }
+    public abstract boolean checkPermission(MessageReceivedEvent event);
 
     public boolean isHidden() { return false; }
+
+    public boolean allowForeignGuilds(@NotNull MessageReceivedEvent event) { return true; }
 
     protected void onInsufficientPermissions(@NotNull MessageReceivedEvent event) {
         Messages.printError(event.getChannel(), STR.getString("err.insufficient_perm.title"), STR.getString("err.insufficient_perm"));
@@ -43,6 +46,7 @@ public abstract class CommandAdapter {
             throw new RegisterException("Bad command name: " + commandName);
         if (getPropsDefaults() != null)
             writeDefaultProps();
+        LOG.d("Successfully registered command " + getCommandName() + " (" + getClass().getSimpleName() + ")");
     }
 
     public ZDSBot getBot() {
@@ -95,14 +99,22 @@ public abstract class CommandAdapter {
             return;
         }
 
-        boolean permission = adapter.checkPermission(event) || Configs.isTechAdmin(event.getAuthor().getId());
-        if (!permission && event.getMember() == null) {
-            Messages.printError(event.getChannel(), STR.getString("err.unknown_perm.title"), STR.getString("err.unknown_perm"));
-            return;
-        }
-        if (!permission) {
-            adapter.onInsufficientPermissions(event);
-            return;
+        if (!Configs.isTechAdmin(event.getAuthor().getId())) {
+            if (!adapter.allowForeignGuilds(event) && !Tools.guildAllowed(event.getGuild())) {
+                Messages.printError(event.getChannel(),
+                        STR.getString("err.cannot_complete"), STR.getString("err.foreign_server"));
+                return;
+            }
+            boolean permission = adapter.checkPermission(event);
+            if (!permission && event.getMember() == null) {
+                Messages.printError(event.getChannel(),
+                        STR.getString("err.unknown_perm.title"), STR.getString("err.unknown_perm"));
+                return;
+            }
+            if (!permission) {
+                adapter.onInsufficientPermissions(event);
+                return;
+            }
         }
 
         try {
@@ -116,7 +128,7 @@ public abstract class CommandAdapter {
                     .queue();
         } catch (NotImplementedException e) {
             event.getChannel().sendMessage(new EmbedBuilder()
-                    .setTitle(STR.getString("err.not_implemented.title"))
+                    .setTitle(STR.getString("err.cannot_complete"))
                     .setDescription(STR.getString("err.not_implemented"))
                     .setColor(0xc2185b)
                     .build()).queue();
