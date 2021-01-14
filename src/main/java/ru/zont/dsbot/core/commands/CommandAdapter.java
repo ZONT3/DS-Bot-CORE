@@ -10,6 +10,8 @@ import ru.zont.dsbot.core.ZDSBot;
 import ru.zont.dsbot.core.tools.Tools;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import static ru.zont.dsbot.core.tools.Strings.*;
@@ -22,6 +24,8 @@ public abstract class CommandAdapter {
     public abstract void onRequest(@NotNull MessageReceivedEvent event) throws UserInvalidArgumentException;
 
     public abstract String getCommandName();
+
+    public List<String> getAliases() { return new ArrayList<>(); }
 
     public abstract String getSynopsis();
 
@@ -80,12 +84,14 @@ public abstract class CommandAdapter {
         if (content.startsWith(prefix))
             content = content.substring(prefix.length());
         CommandAdapter adapter  = null;
-        String commandName;
         for (CommandAdapter a: adapters) {
-            commandName = a.getCommandName();
-            if (content.startsWith(commandName)) {
-                adapter = a;
-                break;
+            ArrayList<String> commandNames = new ArrayList<>(a.getAliases());
+            commandNames.add(a.getCommandName());
+            for (String name: commandNames) {
+                if (content.startsWith(name)) {
+                    adapter = a;
+                    break;
+                }
             }
         }
 

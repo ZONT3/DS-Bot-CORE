@@ -8,6 +8,8 @@ import ru.zont.dsbot.core.tools.Configs;
 import java.util.*;
 import java.util.regex.Pattern;
 
+import static ru.zont.dsbot.core.tools.Strings.STR;
+
 public class Commands {
 
     public static String[] parseArgs(CommandAdapter adapter, MessageReceivedEvent event) {
@@ -57,7 +59,7 @@ public class Commands {
     public static CommandAdapter forName(String command, ZDSBot bot) {
         HashMap<String, CommandAdapter> comms = Commands.getAllCommands(bot);
         for (Map.Entry<String, CommandAdapter> entry: comms.entrySet())
-            if (command.toLowerCase().equals(entry.getKey().toLowerCase()))
+            if (command.equalsIgnoreCase(entry.getKey()))
                 return entry.getValue();
         return null;
     }
@@ -218,6 +220,40 @@ public class Commands {
             public String next() {
                 return allArgs.get(pointer++);
             }
+        }
+    }
+
+    public static class Router {
+        private final int index;
+        private final HashMap<String, Case> map;
+        private String error = STR.getString("err.invalid_arg");
+
+        public Router(int index) {
+            this.index = index;
+            map = new HashMap<>();
+        }
+
+        public Router setError(String error) {
+            this.error = error;
+            return this;
+        }
+
+        public Router addCase(Case c, String... keys) {
+            for (String key: keys) map.put(key, c);
+            return this;
+        }
+
+        public void acceptInput(Input input, MessageReceivedEvent event) {
+            ArrayList<String> args = input.getArgs();
+            if (args.size() < index + 1)
+                throw new CommandAdapter.UserInvalidArgumentException(STR.getString("err.insufficient_args"));
+            final Case thisCase = map.get(args.get(index));
+            if (thisCase == null) throw new CommandAdapter.UserInvalidArgumentException(error);
+            thisCase.accept(input, event);
+        }
+
+        public interface Case {
+            void accept(Input input, MessageReceivedEvent event);
         }
     }
 }
