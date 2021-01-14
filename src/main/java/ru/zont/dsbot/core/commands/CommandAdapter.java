@@ -1,6 +1,5 @@
 package ru.zont.dsbot.core.commands;
 
-import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.jetbrains.annotations.NotNull;
 import ru.zont.dsbot.core.tools.Configs;
@@ -133,11 +132,7 @@ public abstract class CommandAdapter {
                                     String.format(STR.getString("err.args.syntax"), adapter.getSynopsis(), inGuild ? prefix : "", adapter.getCommandName())) : "") ))
                     .queue();
         } catch (NotImplementedException e) {
-            event.getChannel().sendMessage(new EmbedBuilder()
-                    .setTitle(STR.getString("err.cannot_complete"))
-                    .setDescription(STR.getString("err.not_implemented"))
-                    .setColor(0xc2185b)
-                    .build()).queue();
+            event.getChannel().sendMessage(Messages.notImplemented()).queue();
         } catch (DescribedException e) {
             e.printStackTrace();
             if (e.getCause() == null)

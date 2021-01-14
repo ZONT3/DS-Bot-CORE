@@ -35,7 +35,7 @@ public class ZDSBot extends ListenerAdapter {
     public final String commandsPkg;
     public final String handlersPkg;
     public CommandAdapter[] commandAdapters;
-    public final LStatusHandler[] statusHandlers;
+    public LStatusHandler[] statusHandlers;
     public JDA jda;
 
     private final JDABuilder jdaBuilder;

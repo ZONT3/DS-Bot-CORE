@@ -4,10 +4,13 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.*;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
 import java.util.List;
+
+import static ru.zont.dsbot.core.tools.Strings.STR;
 
 public class Messages {
 
@@ -98,6 +101,18 @@ public class Messages {
         return new MessageBuilder()
                 .append("@everyone")
                 .setEmbed(build)
+                .build();
+    }
+
+    public static MessageEmbed notImplemented() {
+        return notImplemented(STR.getString("err.cannot_complete"));
+    }
+
+    public static MessageEmbed notImplemented(String title) {
+        return new EmbedBuilder()
+                .setTitle(title)
+                .setDescription(STR.getString("err.not_implemented"))
+                .setColor(0xc2185b)
                 .build();
     }
 }
