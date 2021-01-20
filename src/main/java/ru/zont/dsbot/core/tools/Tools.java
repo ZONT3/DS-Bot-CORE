@@ -4,9 +4,12 @@ import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.*;
 import net.dv8tion.jda.api.exceptions.ErrorResponseException;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot.core.commands.CommandAdapter;
 import ru.zont.dsbot.core.commands.Commands;
 
 import java.io.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import static ru.zont.dsbot.core.tools.Strings.STR;
 
@@ -67,6 +70,12 @@ public class Tools {
     public static boolean guildAllowed(Guild guild) {
         final String p = Configs.getGlobalProps().getProperty("ALLOWED_SERVERS");
         return p == null || p.contains(guild.getId());
+    }
+
+    public static long userMentionToID(String mention) {
+        final Matcher m = Pattern.compile("<@!?(\\d+)>").matcher(mention);
+        if (!m.find()) throw new CommandAdapter.UserInvalidArgumentException(STR.getString("comms.err.invalid_mention"));
+        return Long.parseLong(m.group(1));
     }
 
     @SuppressWarnings({"ResultOfMethodCallIgnored"})

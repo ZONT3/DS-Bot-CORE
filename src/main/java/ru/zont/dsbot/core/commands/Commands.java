@@ -208,6 +208,15 @@ public class Commands {
             return false;
         }
 
+        public void checkArgCount(int required) {
+            checkArgCount(required, false);
+        }
+
+        public void checkArgCount(int required, boolean all) {
+            if ((all ? getAllArgs().size() : getArgs().size()) < required)
+                throw new CommandAdapter.UserInvalidArgumentException(STR.getString("err.insufficient_args"));
+        }
+
         private class Iter implements Iterator<String> {
             private int pointer = 0;
 
