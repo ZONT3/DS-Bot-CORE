@@ -22,6 +22,7 @@ import ru.zont.dsbot.core.tools.Strings;
 
 import javax.annotation.Nonnull;
 import javax.security.auth.login.LoginException;
+import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -40,6 +41,31 @@ public class ZDSBot extends ListenerAdapter {
 
     private final JDABuilder jdaBuilder;
 
+    public ZDSBot(String token, String version, List<Class<? extends CommandAdapter>> adapters, List<Class<? extends LStatusHandler>> handlers) {
+        this.version = version;
+        this.commandsPkg = null;
+        this.handlersPkg = null;
+
+        commandAdapters = new CommandAdapter[adapters.size()];
+        statusHandlers = new LStatusHandler[handlers.size()];
+        try {
+            for (int i = 0; i < adapters.size(); i++)
+                commandAdapters[i] = adapters.get(i).getDeclaredConstructor(ZDSBot.class).newInstance(this);
+            for (int i = 0; i < handlers.size(); i++)
+                statusHandlers[i] = handlers.get(i).getDeclaredConstructor(ZDSBot.class).newInstance(this);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | NoSuchMethodException e) {
+            throw new RuntimeException(e);
+        }
+
+        jdaBuilder = JDABuilder.createLight(token, GatewayIntent.GUILD_MESSAGES, GatewayIntent.DIRECT_MESSAGES, GatewayIntent.GUILD_MEMBERS)
+                .addEventListeners(this)
+                .addEventListeners((Object[]) statusHandlers)
+                .setMemberCachePolicy(MemberCachePolicy.ALL)
+                .setChunkingFilter(ChunkingFilter.ALL);
+        Configs.writeDefaultGlobalProps();
+    }
+
+    @Deprecated
     public ZDSBot(String token, String version, String commandsPkg, String handlersPkg) {
         this.version = version;
         this.commandsPkg = commandsPkg;
