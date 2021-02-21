@@ -1,5 +1,7 @@
 package ru.zont.dsbot2.commands;
 
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import org.apache.commons.cli.CommandLine;
@@ -11,10 +13,13 @@ import ru.zont.dsbot2.ZDSBot;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static ru.zont.dsbot2.commands.ArgumentTokenizer.*;
+
 public class Input {
     private final MessageReceivedEvent event;
     private final ZDSBot.GuildContext gc;
     private final String content;
+    private CommandLine blankCL = null;
 
     public Input(MessageReceivedEvent event, ZDSBot.GuildContext gc, String content) {
         this.event = event;
@@ -24,6 +29,10 @@ public class Input {
 
     public ZDSBot.GuildContext getContext() {
         return gc;
+    }
+
+    public String get() {
+        return getContentRaw();
     }
 
     public String getContentRaw() {
@@ -55,12 +64,26 @@ public class Input {
     }
 
     public CommandLine getCommandLine(Options options) {
+        return getCommandLine(options, false);
+    }
+
+    public CommandLine getCommandLine(Options options, boolean onlySpecified) {
         DefaultParser parser = new DefaultParser();
         try {
-            return parser.parse(options, ArgumentTokenizer.tokenize(getContentRaw()).toArray(new String[0]));
+            return parser.parse(options,
+                    tokenize(getContentRaw()).toArray(new String[0]),
+                    onlySpecified);
         } catch (ParseException e) {
             throw new RuntimeException(e);
         }
+    }
+
+    public String getArg(int i) {
+        if (blankCL == null)
+            blankCL = getCommandLine();
+        String[] args = blankCL.getArgs();
+        if (i >= args.length) return null;
+        return args[i];
     }
 
     public MessageReceivedEvent getEvent() {
@@ -69,5 +92,19 @@ public class Input {
 
     public MessageChannel getChannel() {
         return event.getChannel();
+    }
+
+    public Message getMessage() {
+        return event.getMessage();
+    }
+
+    public Member getMember() {
+        return event.getMember();
+    }
+
+    public String stripPrefixOpts() {
+        return getContentRaw()
+                .replaceFirst("(--?[^ ]+ +)*", "")
+                .replaceFirst("(\"--?[^\"]+\" +)", "");
     }
 }

@@ -14,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Predicate;
+import java.util.stream.Stream;
 
 public class ZDSBot {
     private static final Logger LOG = LoggerFactory.getLogger(ZDSBot.class);
@@ -134,6 +135,15 @@ public class ZDSBot {
             return guild == null || !getConfig().approved_guilds.get().contains(guild.getId());
         }
 
+        public CommandAdapter commandForName(String name) {
+            for (CommandAdapter command: getCommands())
+                if (Stream.concat(
+                        Stream.of(command.getCommandName()),
+                        command.getAliases().stream()).anyMatch(name::equals))
+                    return command;
+            return null;
+        }
+
         public CommandAdapter[] getCommands() {
             return commandAdapters;
         }
@@ -170,7 +180,7 @@ public class ZDSBot {
     static class Options {
         boolean ignoreWebhooks = true;
         boolean useRawContent = false;
-        List<String> techAdmins = Collections.emptyList();
+        List<String> techAdmins = Collections.singletonList("331524458806247426");
 
         public boolean ignoreWebhooks() {
             return ignoreWebhooks;

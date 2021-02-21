@@ -73,11 +73,11 @@ public class MainDispatcher extends ListenerAdapter {
             LOG.info("Unknown command received from {}: {}", person, contentDisplay);
             printError(event.getChannel(),
                     STR.getString("err.unknown_command.title"),
-                    STR.getString("err.unknown_command"));
+                    String.format(STR.getString("err.unknown_command"), "<@331524458806247426>"));
             return;
         } else LOG.info("Command received from {}: {}", person, contentDisplay);
 
-        content = content.replaceFirst("[^ ]+ +", "");
+        content = content.replaceFirst("[^ ]+ *", "");
 
         if (!context.isTechAdmin(event.getAuthor().getId())) {
             if (!cmd.allowForeignGuilds() && gc.isForeign()) {
@@ -94,7 +94,7 @@ public class MainDispatcher extends ListenerAdapter {
                         STR.getString("err.unknown_perm"));
                 return;
             }
-            if (!cmd.checkPermission()) {
+            if (!cmd.checkPermission(event)) {
                 LOG.info("Blocked insufficient permissions request");
                 cmd.onInsufficientPermissions(event);
                 return;

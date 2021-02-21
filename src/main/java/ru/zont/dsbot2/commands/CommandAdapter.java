@@ -36,7 +36,7 @@ public abstract class CommandAdapter {
 
     public List<String> getAliases() { return Collections.emptyList(); }
 
-    public abstract boolean checkPermission();
+    public abstract boolean checkPermission(MessageReceivedEvent event);
 
     public abstract boolean allowPM();
 
@@ -76,4 +76,7 @@ public abstract class CommandAdapter {
         }
     }
 
+    public ZDSBot.GuildContext getContext() {
+        return context;
+    }
 }

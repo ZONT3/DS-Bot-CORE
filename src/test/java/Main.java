@@ -1,4 +1,5 @@
 import net.dv8tion.jda.api.entities.TextChannel;
+import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.dsbot2.Config;
 import ru.zont.dsbot2.ConfigCaster;
 import ru.zont.dsbot2.ZDSBot;
@@ -6,9 +7,15 @@ import ru.zont.dsbot2.ZDSBotBuilder;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
+import ru.zont.dsbot2.commands.implement.Help;
+import ru.zont.dsbot2.commands.implement.exec.Cmd;
+import ru.zont.dsbot2.commands.implement.exec.Do;
+import ru.zont.dsbot2.commands.implement.exec.Exec;
+import ru.zont.dsbot2.commands.implement.exec.Term;
 import ru.zont.dsbot2.loops.LoopAdapter;
 
 import javax.security.auth.login.LoginException;
+
 
 public class Main {
 
@@ -35,7 +42,7 @@ public class Main {
         }
 
         @Override
-        public boolean checkPermission() {
+        public boolean checkPermission(MessageReceivedEvent event) {
             return true;
         }
 
@@ -83,7 +90,7 @@ public class Main {
         }
 
         @Override
-        public boolean checkPermission() {
+        public boolean checkPermission(MessageReceivedEvent event) {
             return true;
         }
 
@@ -153,8 +160,7 @@ public class Main {
         ZDSBot bot = new ZDSBotBuilder(args[0])
                 .defaultSetup()
                 .setConfig(new MyConfig())
-                .addCommands(Pepega.class, Kek.class)
-                .addLoops(MyLoop.class)
+                .addCommands(Help.class, Exec.class, Cmd.class, Do.class, Term.class)
                 .build();
     }
 }
