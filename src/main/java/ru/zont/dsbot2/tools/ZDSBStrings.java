@@ -1,11 +1,11 @@
-package ru.zont.dsbot.core.tools;
+package ru.zont.dsbot2.tools;
 
-import ru.zont.dsbot.core.UTF8Control;
+import ru.zont.dsbot2.UTF8Control;
 
 import java.util.ResourceBundle;
 
-public class Strings {
-    public static final ResourceBundle STR = ResourceBundle.getBundle("strings", new UTF8Control());
+public class ZDSBStrings {
+    public static final ResourceBundle STR = ResourceBundle.getBundle("strings_core", new UTF8Control());
 
     public static String getPlural(int count, String one, String few, String other) {
         int c = (count % 100);

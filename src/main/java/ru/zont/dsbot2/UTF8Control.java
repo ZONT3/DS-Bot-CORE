@@ -1,4 +1,4 @@
-package ru.zont.dsbot.core;
+package ru.zont.dsbot2;
 
 import java.io.IOException;
 import java.io.InputStream;
