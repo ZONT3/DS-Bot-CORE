@@ -104,7 +104,7 @@ public class ZDSBot {
                         this.loopAdapters[i] = loopAdapter.getDeclaredConstructor(GuildContext.class)
                               .newInstance(this);
                 } catch (Throwable e) {
-                    throw new RuntimeException(e); // TODO trace this
+                    throw new RuntimeException(e);
                 }
             }
         }
@@ -126,6 +126,7 @@ public class ZDSBot {
         }
 
         public TextChannel getTChannel(String id) {
+            if (getGuild() == null) return ZDSBot.this.getTChannel(id);
             return Config.getTChannel(this, id);
         }
 
@@ -145,6 +146,21 @@ public class ZDSBot {
         public Guild getGuild() {
             return guild;
         }
+    }
+
+    /**
+     * Find a text channel across all guilds (in this shard, if applies)<br/>
+     * <b>Weak performance, use {@link GuildContext#getTChannel(String)} instead</b>
+     * @param id Text channel ID
+     * @return A text channel, or {@code null} if not found
+     */
+    private TextChannel getTChannel(String id) {
+        for (Guild guild: jda.getGuilds()) {
+            TextChannel channel = guild.getTextChannelById(id);
+            if (channel != null) return channel;
+        }
+
+        return null;
     }
 
     public Options getOptions() {

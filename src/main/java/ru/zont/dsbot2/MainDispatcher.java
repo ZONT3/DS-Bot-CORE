@@ -42,7 +42,7 @@ public class MainDispatcher extends ListenerAdapter {
 
         if (gc == null) {
             NullPointerException e = new NullPointerException("Guild Context");
-            e.printStackTrace(); // TODO send to error handler
+            ErrorReporter.printStackTrace(e, getClass());
             return;
         }
 
@@ -119,7 +119,7 @@ public class MainDispatcher extends ListenerAdapter {
             event.getChannel().sendMessage(notImplemented()).queue();
         } catch (DescribedException e) {
             LOG.info("DescribedException thrown");
-            e.printStackTrace();
+            ErrorReporter.printStackTrace(e, getClass());
             if (e.getCause() == null)
                 printError(event.getChannel(), e.getTitle(), e.getDescription());
             else printError(event.getChannel(), e.getTitle(),
@@ -132,24 +132,36 @@ public class MainDispatcher extends ListenerAdapter {
                                     describeException(e)))
                             .setFooter(STR.getString("err.unexpected.foot"))
                             .build()).queue();
-            e.printStackTrace();
+            ErrorReporter.printStackTrace(e, getClass());
         }
     }
 
     @Override
     public void onGuildJoin(@NotNull GuildJoinEvent event) {
         LOG.debug("onGuildJoin");
-        context.registerGuild(event.getGuild());
+        try {
+            context.registerGuild(event.getGuild());
+        } catch (Exception e) {
+            ErrorReporter.printStackTrace(e, getClass());
+        }
     }
 
     @Override
     public void onGuildReady(@NotNull GuildReadyEvent event) {
         LOG.debug("onGuildReady");
-        context.registerGuild(event.getGuild());
+        try {
+            context.registerGuild(event.getGuild());
+        } catch (Exception e) {
+            ErrorReporter.printStackTrace(e, getClass());
+        }
     }
 
     @Override
     public void onReady(@NotNull ReadyEvent event) {
-        context.registerVoidGuild();
+        try {
+            context.registerVoidGuild();
+        } catch (Exception e) {
+            ErrorReporter.printStackTrace(e, getClass());
+        }
     }
 }

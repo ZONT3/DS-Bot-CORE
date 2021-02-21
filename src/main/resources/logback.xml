@@ -2,8 +2,9 @@
 <configuration>
     <!--Аппендеры -->
     <!--Файловый аппендер -->
+    <timestamp key="fileTS" datePattern="yyyy.MM.dd-HH.mm.ss"/>
     <appender name="file" class="ch.qos.logback.core.FileAppender">
-        <file>log.log</file>
+        <file>log/${fileTS}.log</file>
         <layout class="ch.qos.logback.classic.PatternLayout">
             <Pattern>%date %level [%thread] %logger{10} [%file:%line] %msg%n</Pattern>
         </layout>
@@ -24,5 +25,8 @@
     <!-- Корневой логгер -->
     <root level="debug">
         <appender-ref ref="sout" />
+    </root>
+    <root level="info">
+        <appender-ref ref="file" />
     </root>
 </configuration>

@@ -3,8 +3,6 @@ package ru.zont.dsbot2;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -19,7 +17,8 @@ import java.util.Properties;
 
 @SuppressWarnings("ResultOfMethodCallIgnored")
 public class Config {
-    private static final Logger LOG = LoggerFactory.getLogger(ZDSBot.class);
+//    private static final Logger LOG = LoggerFactory.getLogger(ZDSBot.class);
+
     private static final File dir = new File("config");
 
     public static Config forGuild(Guild guild, Config global) {
@@ -83,7 +82,7 @@ public class Config {
         try {
             toProperties(guild == null).store(new FileOutputStream(getConfigFile(guild)), getComment(guild));
         } catch (IOException e) {
-            throw new RuntimeException(e); // todo trace
+            throw new RuntimeException(e);
         }
     }
 

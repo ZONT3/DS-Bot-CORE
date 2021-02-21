@@ -8,6 +8,8 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -36,7 +38,7 @@ public class ErrorReporter {
         reportError(logChannel, context, klass, error);
     }
 
-    public void reportError(TextChannel logChannel, ZDSBot.GuildContext context, Class<?> klass, Throwable error) {
+    public synchronized void reportError(TextChannel logChannel, ZDSBot.GuildContext context, Class<?> klass, Throwable error) {
         String identity = String.format("%s::%s",
                 klass.getName(),
                 error.getClass().getName());
@@ -54,7 +56,7 @@ public class ErrorReporter {
                     re = new ReportedError(msg);
                 } else {
                     try { re.msg = logChannel.retrieveMessageById(re.msg.getId()).complete(); }
-                    catch (Throwable e) { e.printStackTrace(); re.msg = null; }
+                    catch (Throwable e) { ErrorReporter.printStackTrace(e, getClass()); re.msg = null; }
                     List<MessageEmbed> embeds;
                     if (re.msg == null || (embeds = re.msg.getEmbeds()).size() <= 0)
                         embeds = Collections.singletonList(getError(klass, error));
@@ -83,11 +85,18 @@ public class ErrorReporter {
 
             reportedMap.put(identity, re);
         } catch (Throwable t) {
-            t.printStackTrace();
+            ErrorReporter.printStackTrace(t, getClass());
             LOG.error("Error occurred while posting an error :/");
         }
 
-        error.printStackTrace();
+        ErrorReporter.printStackTrace(error, getClass());
+    }
+
+    public static void printStackTrace(Throwable e, Class<?> klass) {
+        e.printStackTrace();
+        StringWriter sw = new StringWriter();
+        e.printStackTrace(new PrintWriter(sw));
+        LoggerFactory.getLogger(klass).error(sw.toString());
     }
 
     @NotNull

@@ -6,6 +6,7 @@ import ru.zont.dsbot2.ZDSBotBuilder;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
+import ru.zont.dsbot2.loops.LoopAdapter;
 
 import javax.security.auth.login.LoginException;
 
@@ -107,15 +108,44 @@ public class Main {
         }
     }
 
+    public static class MyLoop extends LoopAdapter {
+        public MyLoop(ZDSBot.GuildContext context) {
+            super(context);
+        }
+
+        @Override
+        public void loop() throws Throwable {
+            throw new RuntimeException("A ya tupa KEK oshibka xDDDDD " + getContext().getGuild());
+        }
+
+        @Override
+        public long getPeriod() {
+            return 10000;
+        }
+
+        @Override
+        public boolean runInGlobal() {
+            return true;
+        }
+
+        @Override
+        public boolean runInLocal() {
+            return true;
+        }
+    }
+
     public static class MyConfig extends Config {
         public final Entry myChannel = new Entry("792009238062039070");
         public final Entry myRole = new Entry("777555228");
 
         @OverrideEntry
         public final Entry prefix = new Entry("t.", true);
+        @OverrideEntry
+        public final Entry channel_log = new Entry("450293189711101952", true);
 
         public MyConfig() {
             super.prefix = prefix;
+            super.channel_log = channel_log;
         }
     }
 
@@ -124,6 +154,7 @@ public class Main {
                 .defaultSetup()
                 .setConfig(new MyConfig())
                 .addCommands(Pepega.class, Kek.class)
+                .addLoops(MyLoop.class)
                 .build();
     }
 }

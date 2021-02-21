@@ -12,6 +12,10 @@ public abstract class LoopAdapter extends TimerTask {
 
     public LoopAdapter(ZDSBot.GuildContext context) {
         this.context = context;
+
+        if (!runInGlobal() && context.getGuild() == null) return;
+        if (!runInLocal() && context.getGuild() != null) return;
+
         Timer loop = new Timer("Loop " + getClass().getSimpleName(), true);
         loop.schedule(this, 0, getPeriod());
     }
@@ -32,4 +36,8 @@ public abstract class LoopAdapter extends TimerTask {
     public abstract void loop() throws Throwable;
 
     public abstract long getPeriod();
+
+    public abstract boolean runInGlobal();
+
+    public abstract boolean runInLocal();
 }
