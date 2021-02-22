@@ -8,6 +8,7 @@ import net.dv8tion.jda.api.entities.MessageEmbed;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.List;
 
 import static ru.zont.dsbot2.tools.ZDSBStrings.STR;
 
@@ -64,5 +65,33 @@ public class ZDSBMessages {
                 .setDescription(STR.getString("err.not_implemented"))
                 .setColor(0xC2185B)
                 .build();
+    }
+
+    @Deprecated
+    public static void sendSplit(MessageChannel channel, List<EmbedBuilder> builders, boolean timestamp) {
+        for (EmbedBuilder builder: builders)
+            channel.sendMessage(
+                    timestamp
+                            ? addTimestamp(builder)
+                            : builder.build()
+            ).complete();
+    }
+
+    @Deprecated
+    public static void sendSplit(MessageChannel channel, List<EmbedBuilder> builders) {
+        sendSplit(channel, builders, false);
+    }
+
+    @Deprecated
+    public static void appendDescriptionSplit(CharSequence append, List<EmbedBuilder> builders) {
+        if (builders.size() == 0) return;
+        EmbedBuilder toAppend = builders.get(builders.size() - 1);
+
+        try {
+            toAppend.appendDescription(append);
+        } catch (IllegalArgumentException e) {
+            if (append == null) throw e;
+            builders.add(new EmbedBuilder().setColor(toAppend.build().getColor()).appendDescription(append));
+        }
     }
 }

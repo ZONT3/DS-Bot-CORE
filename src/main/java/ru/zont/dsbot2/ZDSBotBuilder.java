@@ -101,11 +101,6 @@ public class ZDSBotBuilder {
         return this;
     }
 
-    public ZDSBotBuilder setUseRawContent(boolean b) {
-        options.useRawContent = b;
-        return this;
-    }
-
     public ZDSBotBuilder setTechAdmins(List<String> b) {
         options.techAdmins = b;
         return this;

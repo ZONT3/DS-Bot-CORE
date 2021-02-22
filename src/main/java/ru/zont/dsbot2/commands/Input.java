@@ -9,7 +9,9 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import ru.zont.dsbot2.ZDSBot;
+import ru.zont.dsbot2.tools.ZDSBStrings;
 
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -19,7 +21,7 @@ public class Input {
     private final MessageReceivedEvent event;
     private final ZDSBot.GuildContext gc;
     private final String content;
-    private CommandLine blankCL = null;
+    private String[] args = null;
 
     public Input(MessageReceivedEvent event, ZDSBot.GuildContext gc, String content) {
         this.event = event;
@@ -60,7 +62,9 @@ public class Input {
     }
 
     public String[] getArgs() {
-        return tokenize(getContentRaw()).toArray(new String[0]);
+        if (args == null)
+            args = tokenize(getContentRaw()).toArray(new String[0]);
+        return args;
     }
 
     public CommandLine getCommandLine(Options options) {
@@ -104,5 +108,20 @@ public class Input {
         return getContentRaw()
                 .replaceFirst("(--?[^ ]+ +)*", "")
                 .replaceFirst("(\"--?[^\"]+\" +)", "");
+    }
+
+    public boolean argEquals(int i, List<String> values) {
+        String arg = getArg(i);
+        if (arg == null) return false;
+        return values.contains(arg);
+    }
+
+    public boolean argEquals(int i, String... values) {
+        return argEquals(i, List.of(values));
+    }
+
+    public void assertArgCount(int required) {
+        if (getArgs().length < required)
+            throw new UserInvalidInputException(ZDSBStrings.STR.getString("err.insufficient_args"));
     }
 }

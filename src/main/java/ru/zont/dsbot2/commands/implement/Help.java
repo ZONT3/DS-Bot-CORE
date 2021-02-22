@@ -1,7 +1,6 @@
 package ru.zont.dsbot2.commands.implement;
 
 import net.dv8tion.jda.api.EmbedBuilder;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
@@ -22,7 +21,7 @@ public class Help extends CommandAdapter {
     }
 
     @Override
-    public boolean checkPermission(MessageReceivedEvent event) {
+    public boolean checkPermission(Input input) {
         return true;
     }
 
@@ -33,10 +32,10 @@ public class Help extends CommandAdapter {
         boolean b = !inpt.isEmpty();
         if (b) comm = getContext().commandForName(inpt);
         if (comm == null) {
-            if (b) printError(input.getChannel(), STR.getString("comm.help.err.unknown.title"), STR.getString("comm.help.err.unknown"));
+            if (b) printError(input.getChannel(), STR.getString("comms.help.err.unknown.title"), STR.getString("comms.help.err.unknown"));
 
             EmbedBuilder builder = new EmbedBuilder()
-                    .setTitle(STR.getString("comm.help.list.title"))
+                    .setTitle(STR.getString("comms.help.list.title"))
                     .setColor(Color.LIGHT_GRAY);
             for (CommandAdapter command: getContext().getCommands()) {
                 if (command.isHidden()) continue;
@@ -55,9 +54,9 @@ public class Help extends CommandAdapter {
             input.getChannel().sendMessage(
                     new EmbedBuilder()
                             .setTitle(comm.getCommandName())
-                            .addField(STR.getString("comm.help.entry.example"), formatSynopsis(comm.getSynopsis(),
+                            .addField(STR.getString("comms.help.entry.example"), formatSynopsis(comm.getSynopsis(),
                                     input.getMember() == null ? "" : getContext().getPrefix()), false)
-                            .addField(STR.getString("comm.help.entry.desc"), comm.getDescription(), false)
+                            .addField(STR.getString("comms.help.entry.desc"), comm.getDescription(), false)
                             .setColor(Color.LIGHT_GRAY)
                             .build()
             ).queue();
@@ -80,7 +79,7 @@ public class Help extends CommandAdapter {
 
     @Override
     public String getDescription() {
-        return STR.getString("comm.help.desc");
+        return STR.getString("comms.help.desc");
     }
 
     @Override

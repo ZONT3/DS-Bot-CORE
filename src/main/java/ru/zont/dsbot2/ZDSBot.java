@@ -179,18 +179,10 @@ public class ZDSBot {
 
     static class Options {
         boolean ignoreWebhooks = true;
-        boolean useRawContent = false;
         List<String> techAdmins = Collections.singletonList("331524458806247426");
 
         public boolean ignoreWebhooks() {
             return ignoreWebhooks;
-        }
-
-        /**
-         * @return Using raw message content <b>for detecting command prefix</b>
-         */
-        public boolean useRawContent() {
-            return useRawContent;
         }
     }
 

@@ -1,5 +1,4 @@
 import net.dv8tion.jda.api.entities.TextChannel;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.dsbot2.Config;
 import ru.zont.dsbot2.ConfigCaster;
 import ru.zont.dsbot2.ZDSBot;
@@ -42,7 +41,7 @@ public class Main {
         }
 
         @Override
-        public boolean checkPermission(MessageReceivedEvent event) {
+        public boolean checkPermission(Input input) {
             return true;
         }
 
@@ -90,7 +89,7 @@ public class Main {
         }
 
         @Override
-        public boolean checkPermission(MessageReceivedEvent event) {
+        public boolean checkPermission(Input input) {
             return true;
         }
 

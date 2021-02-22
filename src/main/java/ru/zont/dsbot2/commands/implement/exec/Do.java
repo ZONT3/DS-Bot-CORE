@@ -2,7 +2,6 @@ package ru.zont.dsbot2.commands.implement.exec;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
@@ -26,7 +25,7 @@ public class Do extends CommandAdapter {
 
         String name = args[0];
         if (!name.matches("[\\w\\-.]+"))
-            throw new UserInvalidInputException(STR.getString("comm.do.err.name"));
+            throw new UserInvalidInputException(STR.getString("comms.do.err.name"));
         if (name.endsWith(".py"))
             name = name.substring(0, name.length() - 3);
 
@@ -44,13 +43,13 @@ public class Do extends CommandAdapter {
 
     private String resolveScript(String raw) {
         File main = new File("scripts", raw + ".py");
-        if (!main.exists()) throw new UserInvalidInputException(STR.getString("comm.do.err.name"));
+        if (!main.exists()) throw new UserInvalidInputException(STR.getString("comms.do.err.name"));
         return main.getAbsolutePath();
     }
 
     @Override
-    public boolean checkPermission(MessageReceivedEvent event) {
-        Member member = event.getMember();
+    public boolean checkPermission(Input input) {
+        Member member = input.getMember();
         return member != null && member.hasPermission(Permission.ADMINISTRATOR);
     }
 

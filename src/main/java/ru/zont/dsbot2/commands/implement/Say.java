@@ -1,6 +1,5 @@
 package ru.zont.dsbot2.commands.implement;
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
@@ -22,7 +21,7 @@ public class Say extends CommandAdapter {
     }
 
     @Override
-    public boolean checkPermission(MessageReceivedEvent event) {
+    public boolean checkPermission(Input input) {
         return true;
     }
 

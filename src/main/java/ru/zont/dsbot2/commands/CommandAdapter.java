@@ -36,7 +36,7 @@ public abstract class CommandAdapter {
 
     public List<String> getAliases() { return Collections.emptyList(); }
 
-    public abstract boolean checkPermission(MessageReceivedEvent event);
+    public abstract boolean checkPermission(Input input);
 
     public abstract boolean allowPM();
 

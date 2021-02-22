@@ -168,7 +168,7 @@ public class Exec extends CommandAdapter {
     }
 
     @Override
-    public boolean checkPermission(MessageReceivedEvent event) {
+    public boolean checkPermission(Input input) {
         return false;
     }
 

@@ -48,8 +48,7 @@ public class MainDispatcher extends ListenerAdapter {
 
         String prefix = gc.getPrefix();
         String contentDisplay = event.getMessage().getContentDisplay();
-        String content = !context.getOptions().useRawContent()
-                ? contentDisplay : event.getMessage().getContentRaw();
+        String content = event.getMessage().getContentRaw();
 
         if (!prefix.isEmpty() && content.startsWith(prefix))
             content = content.replaceFirst(Pattern.quote(prefix), "");
@@ -77,7 +76,7 @@ public class MainDispatcher extends ListenerAdapter {
             return;
         } else LOG.info("Command received from {}: {}", person, contentDisplay);
 
-        content = content.replaceFirst("[^ ]+ *", "");
+        Input input = new Input(event, gc, content.replaceFirst("[^ ]+ *", ""));
 
         if (!context.isTechAdmin(event.getAuthor().getId())) {
             if (!cmd.allowForeignGuilds() && gc.isForeign()) {
@@ -94,7 +93,7 @@ public class MainDispatcher extends ListenerAdapter {
                         STR.getString("err.unknown_perm"));
                 return;
             }
-            if (!cmd.checkPermission(event)) {
+            if (!cmd.checkPermission(input)) {
                 LOG.info("Blocked insufficient permissions request");
                 cmd.onInsufficientPermissions(event);
                 return;
@@ -102,7 +101,7 @@ public class MainDispatcher extends ListenerAdapter {
         }
 
         try {
-            cmd.onCall(new Input(event, gc, content));
+            cmd.onCall(input);
         } catch (UserInvalidInputException e) {
             LOG.info("UserInvalidInputException thrown");
             event.getChannel()
