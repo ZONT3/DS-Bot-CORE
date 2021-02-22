@@ -26,7 +26,7 @@ public class Main {
 
         @Override
         public void onCall(Input input) {
-            String[] args = input.getCommandLine().getArgs();
+            String[] args = input.getArgs();
             if (args.length < 1) throw new UserInvalidInputException("Too few args");
 
             String id = args[0];

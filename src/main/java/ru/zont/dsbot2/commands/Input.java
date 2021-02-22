@@ -59,8 +59,8 @@ public class Input {
         return contentRaw.replaceFirst(pattern, "");
     }
 
-    public CommandLine getCommandLine() {
-        return getCommandLine(new Options());
+    public String[] getArgs() {
+        return tokenize(getContentRaw()).toArray(new String[0]);
     }
 
     public CommandLine getCommandLine(Options options) {
@@ -71,7 +71,7 @@ public class Input {
         DefaultParser parser = new DefaultParser();
         try {
             return parser.parse(options,
-                    tokenize(getContentRaw()).toArray(new String[0]),
+                    getArgs(),
                     onlySpecified);
         } catch (ParseException e) {
             throw new RuntimeException(e);
@@ -79,9 +79,7 @@ public class Input {
     }
 
     public String getArg(int i) {
-        if (blankCL == null)
-            blankCL = getCommandLine();
-        String[] args = blankCL.getArgs();
+        String[] args = getArgs();
         if (i >= args.length) return null;
         return args[i];
     }

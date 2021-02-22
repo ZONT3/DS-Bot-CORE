@@ -21,7 +21,7 @@ public class Do extends CommandAdapter {
 
     @Override
     public void onCall(Input input) {
-        String[] args = input.getCommandLine().getArgs();
+        String[] args = input.getArgs();
         if (args.length < 1) throw new UserInvalidInputException(STR.getString("err.insufficient_args"));
 
         String name = args[0];
