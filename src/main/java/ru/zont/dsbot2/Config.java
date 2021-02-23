@@ -74,11 +74,11 @@ public class Config {
         return String.format("ZDSBot Config for server \"%s\"", guild.getName());
     }
 
-    public Entry prefix = new Entry("z.", true);
+    public Entry prefix = new Entry("z.");
     public Entry approved_guilds = new Entry("", true);
     public Entry channel_log = new Entry("0");
-    public Entry version = new Entry("TEST-SNAPSHOT");
-    public Entry version_str = new Entry("ZONT DS Bot v.%s");
+    public Entry version = new Entry("TEST-SNAPSHOT", true);
+    public Entry version_str = new Entry("ZONT DS Bot v.%s", true);
 
     public synchronized void commit(Guild guild) {
         try {

@@ -132,7 +132,7 @@ public class ZDSBot {
         }
 
         public boolean isForeign() {
-            return guild == null || !getConfig().approved_guilds.get().contains(guild.getId());
+            return guild == null || !globalConfig.approved_guilds.get().contains(guild.getId());
         }
 
         public CommandAdapter commandForName(String name) {
