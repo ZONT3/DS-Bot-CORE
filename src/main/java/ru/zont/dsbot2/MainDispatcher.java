@@ -79,7 +79,7 @@ public class MainDispatcher extends ListenerAdapter {
         Input input = new Input(event, gc, content.replaceFirst("[^ ]+ *", ""));
 
         if (!context.isTechAdmin(event.getAuthor().getId())) {
-            if (!cmd.allowForeignGuilds() && gc.isForeign()) {
+            if (member != null && !cmd.allowForeignGuilds() && gc.isForeign()) {
                 LOG.info("Blocked foreign guild request");
                 printError(event.getChannel(),
                         STR.getString("err"),

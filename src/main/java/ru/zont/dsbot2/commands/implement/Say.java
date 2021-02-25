@@ -2,7 +2,6 @@ package ru.zont.dsbot2.commands.implement;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.Permission;
-import net.dv8tion.jda.api.entities.ChannelType;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.TextChannel;
@@ -13,12 +12,11 @@ import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
-import ru.zont.dsbot2.tools.ZDSBStrings;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.zont.dsbot2.tools.ZDSBStrings.*;
+import static ru.zont.dsbot2.tools.ZDSBStrings.STR;
 
 public class Say extends CommandAdapter {
     public Say(ZDSBot.GuildContext context) {
@@ -33,8 +31,11 @@ public class Say extends CommandAdapter {
         options.addOption("c", "color", true, STR.getString("comms.say.opt.title"));
 
         MessageReceivedEvent event = input.getEvent();
-        if (!event.isFromType(ChannelType.PRIVATE)) return;
-        String content = input.getContentRaw().replaceFirst(".+?(?=\\d{7,})", "");
+        String content;
+        String contentRaw = input.getContentRaw();
+        if (!contentRaw.matches("\\d+ .*"))
+            content = contentRaw.replaceFirst(".+?(?=\\d{7,})", "");
+        else content = contentRaw;
         String[] s = content.split(" ");
         if (s.length < 2) throw new UserInvalidInputException(STR.getString("err.incorrect_args"));
         if (!s[0].matches("\\d+")) throw new UserInvalidInputException("First arg should be a channel ID!");
