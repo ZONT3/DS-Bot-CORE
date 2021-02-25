@@ -8,8 +8,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 import java.lang.reflect.Field;
 import java.util.HashSet;
 import java.util.Objects;
@@ -94,13 +92,9 @@ public class Config {
 
     private Properties toProperties(boolean global) {
         Properties config = new Properties();
-        for (EntryPair e: entrySet()) {
-            if (e.value.global == global) {
-                if (config.getProperty(e.key, null) != null && !e.override)
-                    continue;
+        for (EntryPair e: entrySet())
+            if (e.value.global == global)
                 config.setProperty(e.key, e.value.get());
-            }
-        }
         return config;
     }
 
@@ -112,7 +106,7 @@ public class Config {
             try {
                 if (field.get(this) == null)
                     throw new NullPointerException("Each entry should have a default value");
-                res.add(new EntryPair(field.getName(), (Entry) field.get(this), field.isAnnotationPresent(OverrideEntry.class)));
+                res.add(new EntryPair(field.getName(), (Entry) field.get(this)));
             } catch (IllegalAccessException e) {
                 throw new RuntimeException(e);
             }
@@ -136,12 +130,10 @@ public class Config {
     public static class EntryPair {
         public String key;
         public Entry value;
-        public final boolean override;
 
-        public EntryPair(String key, Entry value, boolean override) {
+        public EntryPair(String key, Entry value) {
             this.key = key;
             this.value = value;
-            this.override = override;
         }
 
         @Override
@@ -192,9 +184,6 @@ public class Config {
             return Objects.hash(value, global);
         }
     }
-
-    @Retention(RetentionPolicy.RUNTIME)
-    public @interface OverrideEntry {}
 
     public static TextChannel getTChannel(ZDSBot.GuildContext context, String id) {
         if (id.isEmpty() || id.equals("0")) return null;

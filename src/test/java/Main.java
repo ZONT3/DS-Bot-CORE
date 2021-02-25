@@ -74,7 +74,7 @@ public class Main {
 
         @Override
         public void onCall(Input input) {
-            MyConfig conf = new ConfigCaster<MyConfig>().cast(MyConfig.class, input.getContext().getConfig());
+            MyConfig conf = new ConfigCaster<MyConfig>().cast(input.getContext().getConfig());
             String content = input.getContentRaw();
 
             input.getChannel().sendMessage(content).queue();

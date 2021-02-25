@@ -36,6 +36,7 @@ public class ZDSBot {
         jda.addEventListener(new MainDispatcher(this));
     }
 
+    @Nullable
     public GuildContext forGuild(Guild guild) {
         return guilds.stream()
                 .filter(findGuild(guild))
@@ -78,6 +79,25 @@ public class ZDSBot {
 
     public boolean isTechAdmin(String id) {
         return getOptions().techAdmins.contains(id);
+    }
+
+    /**
+     * Find a text channel across all guilds (in this shard, if applies)<br/>
+     * <b>Weak performance, use {@link GuildContext#getTChannel(String)} instead</b>
+     * @param id Text channel ID
+     * @return A text channel, or {@code null} if not found
+     */
+    public TextChannel getTChannel(String id) {
+        for (Guild guild: jda.getGuilds()) {
+            TextChannel channel = guild.getTextChannelById(id);
+            if (channel != null) return channel;
+        }
+
+        return null;
+    }
+
+    public JDA getJda() {
+        return jda;
     }
 
     public class GuildContext {
@@ -126,6 +146,12 @@ public class ZDSBot {
             return globalConfig;
         }
 
+        /**
+         * Seek for a text channel in <b>current guild</b>.<br/>
+         * If called from void context, then it calls to {@link ZDSBot#getTChannel(String)}
+         * @param id Channel's ID
+         * @return {@link TextChannel} or {@code null} if not found
+         */
         public TextChannel getTChannel(String id) {
             if (getGuild() == null) return ZDSBot.this.getTChannel(id);
             return Config.getTChannel(this, id);
@@ -158,21 +184,6 @@ public class ZDSBot {
         }
     }
 
-    /**
-     * Find a text channel across all guilds (in this shard, if applies)<br/>
-     * <b>Weak performance, use {@link GuildContext#getTChannel(String)} instead</b>
-     * @param id Text channel ID
-     * @return A text channel, or {@code null} if not found
-     */
-    private TextChannel getTChannel(String id) {
-        for (Guild guild: jda.getGuilds()) {
-            TextChannel channel = guild.getTextChannelById(id);
-            if (channel != null) return channel;
-        }
-
-        return null;
-    }
-
     public Options getOptions() {
         return options;
     }
@@ -185,5 +196,4 @@ public class ZDSBot {
             return ignoreWebhooks;
         }
     }
-
 }

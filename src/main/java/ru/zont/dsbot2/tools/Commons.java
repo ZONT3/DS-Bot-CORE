@@ -6,6 +6,7 @@ import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -55,5 +56,29 @@ public class Commons {
         final Matcher m = Pattern.compile("<@!?(\\d+)>").matcher(mention);
         if (!m.find()) throw new UserInvalidInputException(STR.getString("comms.err.invalid_mention"));
         return Long.parseLong(m.group(1));
+    }
+
+    public static String[] splitLength(String s, int len) {
+        String[] ret = new String[(s.length() + len - 1) / len];
+
+        int i = 0;
+        for (int start = 0; start < s.length(); start += len) {
+            ret[i] = (s.substring(start, Math.min(s.length(), start + len)));
+            i++;
+        }
+        return ret;
+    }
+
+    /**
+     * Parse IDs from string, delimited with any other char than a digit
+     * @param s String to parse
+     * @return List of IDs
+     */
+    public static ArrayList<String> getIDs(String s) {
+        ArrayList<String> res = new ArrayList<>();
+        Matcher matcher = Pattern.compile("\\d+").matcher(s);
+        while (matcher.find())
+            res.add(matcher.group());
+        return res;
     }
 }

@@ -1,9 +1,19 @@
 package ru.zont.dsbot2.commands.implement;
 
+import net.dv8tion.jda.api.Permission;
+import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.TextChannel;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
-import ru.zont.dsbot2.tools.ZDSBStrings;
+import ru.zont.dsbot2.commands.UserInvalidInputException;
+import ru.zont.dsbot2.tools.ZDSBMessages;
+
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import static ru.zont.dsbot2.tools.ZDSBStrings.*;
 
 public class Clear extends CommandAdapter {
     public Clear(ZDSBot.GuildContext context) {
@@ -12,17 +22,47 @@ public class Clear extends CommandAdapter {
 
     @Override
     public void onCall(Input input) {
+        if (input.getArgs().length < 1)
+            throw new UserInvalidInputException(STR.getString("err.insufficient_args"));
 
+        TextChannel inputChannel = input.getEvent().getTextChannel();
+        TextChannel toClear;
+        int amount;
+        if (input.getArgs().length == 1) {
+            if (!input.getArg(0).matches("\\d+"))
+                throw new UserInvalidInputException(STR.getString("comm.clear.err.syntax"));
+            toClear = inputChannel;
+            amount = Integer.parseInt(input.getArg(0));
+        } else {
+            final String ref = input.getArg(0);
+            final Matcher matcher = Pattern.compile("<#!?(\\d+)>").matcher(ref);
+            if (!matcher.find() || !input.getArg(1).matches("\\d+"))
+                throw new UserInvalidInputException(STR.getString("comm.clear.err.syntax"));
+            if (!input.getEvent().isFromGuild())
+                throw new UserInvalidInputException(STR.getString("comm.clear.err.pm"), false);
+            toClear = input.getEvent().getGuild().getTextChannelById(matcher.group(1));
+            amount = Integer.parseInt(input.getArg(1));
+        }
+        if (toClear == null)
+            throw new RuntimeException(STR.getString("comm.clear.err.null_channel"));
+
+        final boolean b = toClear == inputChannel;
+        if (b) input.getMessage().delete().complete();
+        else ZDSBMessages.addOK(input.getEvent().getMessage());
+        for (Message message: toClear.getHistory().retrievePast(amount).complete())
+            message.delete().queue();
     }
 
     @Override
     public String getCommandName() {
-        return "ping";
+        return "clear";
     }
 
     @Override
     public boolean checkPermission(Input input) {
-        return true;
+        Member member = input.getMember();
+        if (member == null) return true;
+        return member.hasPermission(Permission.MESSAGE_MANAGE);
     }
 
     @Override
@@ -37,11 +77,11 @@ public class Clear extends CommandAdapter {
 
     @Override
     public String getSynopsis() {
-        return "ping";
+        return "clear [#channel] <amount>";
     }
 
     @Override
     public String getDescription() {
-        return ZDSBStrings.STR.getString("comms.clear.desc");
+        return STR.getString("comms.clear.desc");
     }
 }

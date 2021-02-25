@@ -67,7 +67,6 @@ public class ZDSBMessages {
                 .build();
     }
 
-    @Deprecated
     public static void sendSplit(MessageChannel channel, List<EmbedBuilder> builders, boolean timestamp) {
         for (EmbedBuilder builder: builders)
             channel.sendMessage(
@@ -77,12 +76,10 @@ public class ZDSBMessages {
             ).complete();
     }
 
-    @Deprecated
     public static void sendSplit(MessageChannel channel, List<EmbedBuilder> builders) {
         sendSplit(channel, builders, false);
     }
 
-    @Deprecated
     public static void appendDescriptionSplit(CharSequence append, List<EmbedBuilder> builders) {
         if (builders.size() == 0) return;
         EmbedBuilder toAppend = builders.get(builders.size() - 1);
