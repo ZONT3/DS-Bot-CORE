@@ -6,6 +6,7 @@ import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
 
 import java.awt.*;
+import java.util.List;
 
 import static ru.zont.dsbot2.tools.ZDSBMessages.printError;
 import static ru.zont.dsbot2.tools.ZDSBStrings.STR;
@@ -90,5 +91,10 @@ public class Help extends CommandAdapter {
     @Override
     public boolean allowForeignGuilds() {
         return true;
+    }
+
+    @Override
+    public List<String> getAliases() {
+        return List.of("man");
     }
 }

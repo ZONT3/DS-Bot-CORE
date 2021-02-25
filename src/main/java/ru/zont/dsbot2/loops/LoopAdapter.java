@@ -16,8 +16,10 @@ public abstract class LoopAdapter extends TimerTask {
         if (!runInGlobal() && context.getGuild() == null) return;
         if (!runInLocal() && context.getGuild() != null) return;
 
+        long period = getPeriod();
+        if (period <= 0) return;
         Timer loop = new Timer("Loop " + getClass().getSimpleName(), true);
-        loop.schedule(this, 0, getPeriod());
+        loop.schedule(this, 0, period);
     }
 
     @Override
