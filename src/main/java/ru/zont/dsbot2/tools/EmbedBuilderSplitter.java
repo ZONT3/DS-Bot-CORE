@@ -60,7 +60,7 @@ public class EmbedBuilderSplitter {
     }
 
     public void appendDescription(String s) {
-        Commons.splitLength(s, MessageEmbed.TEXT_MAX_LENGTH);
+        //Commons.splitLength(s, MessageEmbed.TEXT_MAX_LENGTH);
         throw new NotImplementedException();
     }
 

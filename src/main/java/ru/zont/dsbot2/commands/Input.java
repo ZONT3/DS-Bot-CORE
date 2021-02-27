@@ -11,6 +11,7 @@ import org.apache.commons.cli.ParseException;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.tools.ZDSBStrings;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -62,8 +63,11 @@ public class Input {
     }
 
     public String[] getArgs() {
-        if (args == null)
-            args = tokenize(getContentRaw()).toArray(new String[0]);
+        if (args == null) {
+            List<String> argsList = tokenize(getContentRaw());
+            argsList.removeIf(s -> s.startsWith("-") && !s.startsWith("---") || s.startsWith("\"-") && !s.startsWith("\"---"));
+            args = argsList.toArray(new String[0]);
+        }
         return args;
     }
 

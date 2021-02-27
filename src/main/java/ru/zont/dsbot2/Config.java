@@ -52,7 +52,7 @@ public class Config {
     private static Config fromProperties(Class<? extends Config> klass, Properties config, boolean global) throws Throwable {
         Config res = klass.getConstructor().newInstance();
         for (EntryPair e: res.entrySet()) {
-            if (e.value.global != global) continue;
+            if (e.value.global && !global) continue;
 
             String property = config.getProperty(e.key, null);
             if (property == null) property = "";
@@ -93,7 +93,7 @@ public class Config {
     private Properties toProperties(boolean global) {
         Properties config = new Properties();
         for (EntryPair e: entrySet())
-            if (e.value.global == global)
+            if (!e.value.global || global)
                 config.setProperty(e.key, e.value.get());
         return config;
     }

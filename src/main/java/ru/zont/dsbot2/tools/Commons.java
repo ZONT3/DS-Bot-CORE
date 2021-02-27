@@ -29,6 +29,13 @@ public class Commons {
                 || os.toLowerCase().contains("aix"));
     }
 
+    /**
+     * Permission that allows any input with first argument from {@code values} list
+     * or {@link Member} with {@link Permission#ADMINISTRATOR} or {@link Permission#MANAGE_PERMISSIONS}
+     * @param input Input param
+     * @param values allowed first argument values
+     * @return permission check result
+     */
     public static boolean rolesLikePermissions(Input input, List<String> values) {
         if (!input.argEquals(0, values)) return true;
 

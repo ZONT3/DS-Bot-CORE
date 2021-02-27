@@ -1,11 +1,8 @@
 package ru.zont.dsbot2.tools;
 
-import net.dv8tion.jda.api.events.message.MessageReceivedEvent;
-import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 
 public class CRouter {
@@ -28,16 +25,16 @@ public class CRouter {
         return this;
     }
 
-    public void acceptInput(Input input, MessageReceivedEvent event) {
+    public void acceptInput(Input input) {
         String[] args = input.getArgs();
         if (args.length < index + 1)
             throw new UserInvalidInputException(ZDSBStrings.STR.getString("err.insufficient_args"));
         final Case thisCase = map.get(args[index]);
         if (thisCase == null) throw new UserInvalidInputException(error);
-        thisCase.accept(input, event);
+        thisCase.accept(input);
     }
 
     public interface Case {
-        void accept(Input input, MessageReceivedEvent event);
+        void accept(Input input);
     }
 }

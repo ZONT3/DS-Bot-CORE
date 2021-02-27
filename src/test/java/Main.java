@@ -74,7 +74,7 @@ public class Main {
 
         @Override
         public void onCall(Input input) {
-            MyConfig conf = new ConfigCaster<MyConfig>().cast(input.getContext().getConfig());
+            MyConfig conf = ConfigCaster.cast(input.getContext().getConfig());
             String content = input.getContentRaw();
 
             input.getChannel().sendMessage(content).queue();
@@ -144,9 +144,7 @@ public class Main {
         public final Entry myChannel = new Entry("792009238062039070");
         public final Entry myRole = new Entry("777555228");
 
-        @OverrideEntry
         public final Entry prefix = new Entry("t.", true);
-        @OverrideEntry
         public final Entry channel_log = new Entry("450293189711101952", true);
 
         public MyConfig() {
