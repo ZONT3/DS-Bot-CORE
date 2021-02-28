@@ -32,16 +32,12 @@ public class Config {
         Properties config = dflt.toProperties(global);
 
         try {
-            boolean justCreated = false;
             if (!configFile.isFile()) {
                 configFile.delete();
                 configFile.getParentFile().mkdirs();
-                config.store(new FileOutputStream(configFile), comment);
-                justCreated = true;
-            }
+            } else config.load(new FileInputStream(configFile));
 
-            if (!justCreated)
-                config.load(new FileInputStream(configFile));
+            config.store(new FileOutputStream(configFile), comment);
 
             return fromProperties(dflt.getClass(), config, global);
         } catch (Throwable e) {
