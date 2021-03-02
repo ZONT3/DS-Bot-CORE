@@ -55,6 +55,20 @@ public class ZDSBMessages {
                 .build();
     }
 
+    /**
+     * Adds text before embed
+     * @param build Embed
+     * @param delim Delimiter for strings
+     * @param prefixStrings Text strings
+     * @return Message with text and embed
+     */
+    public static Message wrapEmbed(MessageEmbed build, String delim, String... prefixStrings) {
+        return new MessageBuilder()
+                .append(String.join(delim, prefixStrings))
+                .setEmbed(build)
+                .build();
+    }
+
     public static MessageEmbed notImplemented() {
         return notImplemented(STR.getString("err.cannot_complete"));
     }
