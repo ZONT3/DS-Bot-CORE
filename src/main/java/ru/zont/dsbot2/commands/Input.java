@@ -79,7 +79,7 @@ public class Input {
         DefaultParser parser = new DefaultParser();
         try {
             return parser.parse(options,
-                    getArgs(),
+                    tokenize(getContentRaw()).toArray(new String[0]),
                     onlySpecified);
         } catch (ParseException e) {
             throw new RuntimeException(e);

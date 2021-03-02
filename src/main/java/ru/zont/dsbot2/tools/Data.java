@@ -1,54 +1,85 @@
 package ru.zont.dsbot2.tools;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.function.Consumer;
 
 public class Data<T extends Serializable> {
     public static final File DIR = new File("db");
     private final File file;
 
-    private List<T> list = null;
+    protected T data = null;
 
     public Data(String name) {
         file = new File(DIR, name + ".bin");
     }
 
     @SuppressWarnings({"unchecked", "ResultOfMethodCallIgnored"})
-    private void load() {
+    protected void load() {
         DIR.mkdirs();
         if (!file.exists()) {
-            list = new ArrayList<>();
+            data = null;
             return;
         }
         try (FileInputStream fis = new FileInputStream(file);
              ObjectInputStream in = new ObjectInputStream(fis)) {
-            list = (List<T>) in.readObject();
+            data = (T) in.readObject();
         } catch (IOException | ClassNotFoundException e) {
             throw new RuntimeException(e);
         }
     }
 
     @SuppressWarnings("ResultOfMethodCallIgnored")
-    private void commit() {
+    protected void commit() {
         DIR.mkdirs();
         try (FileOutputStream fos = new FileOutputStream(file);
              ObjectOutputStream out = new ObjectOutputStream(fos)) {
-            out.writeObject(list);
+            out.writeObject(data);
         } catch (IOException e) {
             throw new RuntimeException(e);
         }
     }
 
-    public void op(Consumer<List<T>> consumer) {
+    public T getData() {
+        return data;
+    }
+
+    /**
+     * Operate on object under consumer, then commit modified
+     * @param consumer Operations with collection
+     */
+    public void op(Consumer<T> consumer) {
         load();
-        consumer.accept(list);
+        consumer.accept(data);
         commit();
     }
 
-    public List<T> get() {
+    /**
+     * {@link Data#op(Consumer)} but if data is null, will be replaced by {@code defaultValue}
+     * @param defaultValue Default value
+     * @param consumer Operations with collection
+     */
+    public void op(T defaultValue, Consumer<T> consumer) {
         load();
-        return new ArrayList<>(list);
+        if (data == null) data = defaultValue;
+        consumer.accept(data);
+        commit();
+    }
+
+    /**
+     * {@link Data#op(T, Consumer)}
+     * @param defaultValue Default value
+     * @param callback Operations and result
+     * @param <R> callback's result type
+     */
+    public <R> R op(T defaultValue, Callback<T, R> callback) {
+        load();
+        if (data == null) data = defaultValue;
+        R res = callback.call(data);
+        commit();
+        return res;
+    }
+
+    public interface Callback<A, R> {
+        R call(A arg);
     }
 }
