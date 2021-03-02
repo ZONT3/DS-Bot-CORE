@@ -5,6 +5,7 @@ import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import org.jetbrains.annotations.NotNull;
+import ru.zont.dsbot2.tools.ZDSBMessages;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -160,7 +161,7 @@ class ExecHandler {
             if (nextLines.length() + line.length() <= OUT_MAX_LEN) {
                 nextLines.append(line);
             } else {
-                List<String> list = splitString(nextLines);
+                List<String> list = splitString(nextLines, OUT_MAX_LEN);
                 if (list.size() <= 1) {
                     if (!nextLines.toString().isEmpty())
                         res.add(nextLines.toString());
@@ -172,17 +173,8 @@ class ExecHandler {
             }
         }
         if (!nextLines.toString().isEmpty())
-            res.addAll(splitString(nextLines));
+            res.addAll(splitString(nextLines, OUT_MAX_LEN));
         return res;
-    }
-
-    @NotNull
-    private List<String> splitString(CharSequence nextLines) {
-        String text = nextLines.toString();
-        List<String> ret = new ArrayList<>((text.length() + OUT_MAX_LEN - 1) / OUT_MAX_LEN);
-        for (int start = 0; start < text.length(); start += OUT_MAX_LEN)
-            ret.add(text.substring(start, Math.min(text.length(), start + OUT_MAX_LEN)));
-        return ret;
     }
 
     private void sendOutput(OutList outList, String type, String lines) {

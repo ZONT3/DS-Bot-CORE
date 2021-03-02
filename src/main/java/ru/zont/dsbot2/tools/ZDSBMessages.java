@@ -5,9 +5,11 @@ import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import org.jetbrains.annotations.NotNull;
 
 import java.awt.*;
 import java.time.Instant;
+import java.util.ArrayList;
 import java.util.List;
 
 import static ru.zont.dsbot2.tools.ZDSBStrings.STR;
@@ -102,7 +104,21 @@ public class ZDSBMessages {
             toAppend.appendDescription(append);
         } catch (IllegalArgumentException e) {
             if (append == null) throw e;
-            builders.add(new EmbedBuilder().setColor(toAppend.build().getColor()).appendDescription(append));
+            MessageEmbed.Footer footer = toAppend.build().getFooter();
+            List<String> strings = splitString(append, MessageEmbed.TEXT_MAX_LENGTH - 5 -
+                    (footer == null || footer.getText() == null ? 0 : footer.getText().length()));
+            for (String string: strings)
+                builders.add(new EmbedBuilder().setColor(toAppend.build().getColor()).appendDescription(string));
         }
+    }
+
+
+    @NotNull
+    public static List<String> splitString(CharSequence nextLines, int length) {
+        String text = nextLines.toString();
+        List<String> ret = new ArrayList<>((text.length() + length - 1) / length);
+        for (int start = 0; start < text.length(); start += length)
+            ret.add(text.substring(start, Math.min(text.length(), start + length)));
+        return ret;
     }
 }

@@ -49,6 +49,7 @@ public class Config {
         Config res = klass.getConstructor().newInstance();
         for (EntryPair e: res.entrySet()) {
             if (e.value.global && !global) continue;
+            if (!e.value.override) continue;
 
             String property = config.getProperty(e.key, null);
             if (property == null) property = "";
@@ -149,10 +150,16 @@ public class Config {
     public static class Entry {
         private String value;
         private final boolean global;
+        private final boolean override;
 
-        public Entry(String value, boolean global) {
+        public Entry(String value, boolean global, boolean override) {
             this.value = value;
             this.global = global;
+            this.override = override;
+        }
+
+        public Entry(String value, boolean global) {
+            this(value, global, true);
         }
 
         public Entry(String defaultValue) {
