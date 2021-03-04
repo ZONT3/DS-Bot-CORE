@@ -2,6 +2,7 @@ package ru.zont.dsbot2;
 
 import net.dv8tion.jda.api.JDA;
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -96,6 +97,21 @@ public class ZDSBot {
         return null;
     }
 
+    /**
+     * Find a guild channel across all guilds (in this shard, if applies)<br/>
+     * <b>Weak performance, use {@link GuildContext#getChannel(String)} instead</b>
+     * @param id Text channel ID
+     * @return A text channel, or {@code null} if not found
+     */
+    private GuildChannel getChannel(String id) {
+        for (Guild guild: jda.getGuilds()) {
+            GuildChannel channel = guild.getGuildChannelById(id);
+            if (channel != null) return channel;
+        }
+
+        return null;
+    }
+
     public JDA getJda() {
         return jda;
     }
@@ -125,7 +141,7 @@ public class ZDSBot {
                         this.loopAdapters[i] = loopAdapter.getDeclaredConstructor(GuildContext.class)
                               .newInstance(this);
                 } catch (Throwable e) {
-                    throw new RuntimeException(e);
+                    ErrorReporter.printStackTrace(e, getClass());
                 }
             }
         }
@@ -155,6 +171,11 @@ public class ZDSBot {
         public TextChannel getTChannel(String id) {
             if (getGuild() == null) return ZDSBot.this.getTChannel(id);
             return Config.getTChannel(this, id);
+        }
+
+        public GuildChannel getChannel(String id) {
+            if (getGuild() == null) return ZDSBot.this.getChannel(id);
+            return Config.getChannel(this, id);
         }
 
         public boolean isForeign() {

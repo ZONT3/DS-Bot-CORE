@@ -1,6 +1,7 @@
 package ru.zont.dsbot2;
 
 import net.dv8tion.jda.api.entities.Guild;
+import net.dv8tion.jda.api.entities.GuildChannel;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
 
@@ -125,9 +126,9 @@ public class Config {
     }
 
     public static class EntryPair {
+
         public String key;
         public Entry value;
-
         public EntryPair(String key, Entry value) {
             this.key = key;
             this.value = value;
@@ -151,7 +152,6 @@ public class Config {
         private String value;
         private final boolean global;
         private final boolean override;
-
         public Entry(String value, boolean global, boolean override) {
             this.value = value;
             this.global = global;
@@ -186,12 +186,19 @@ public class Config {
         public int hashCode() {
             return Objects.hash(value, global);
         }
-    }
 
+    }
     public static TextChannel getTChannel(ZDSBot.GuildContext context, String id) {
         if (id.isEmpty() || id.equals("0")) return null;
 
         Guild guild = context.getGuild();
         return guild != null ? guild.getTextChannelById(id) : null;
+    }
+
+    public static GuildChannel getChannel(ZDSBot.GuildContext context, String id) {
+        if (id.isEmpty() || id.equals("0")) return null;
+        Guild guild = context.getGuild();
+        return guild != null ? guild.getGuildChannelById(id) : null;
+
     }
 }
