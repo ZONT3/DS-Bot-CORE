@@ -2,7 +2,8 @@ package ru.zont.dsbot2.tools;
 
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
-import ru.zont.dsbot2.commands.CommandAdapter;
+import ru.zont.dsbot2.ErrorReporter;
+import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
 
@@ -87,5 +88,13 @@ public class Commons {
         while (matcher.find())
             res.add(matcher.group());
         return res;
+    }
+
+    public static void tryReport(ZDSBot.GuildContext context, Class<?> clazz, Runnable r) {
+        try {
+            r.run();
+        } catch (Throwable throwable) {
+            ErrorReporter.inst().reportError(context, clazz, throwable);
+        }
     }
 }
