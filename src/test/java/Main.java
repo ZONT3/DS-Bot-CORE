@@ -158,6 +158,7 @@ public class Main {
                 .defaultSetup()
                 .setConfig(new MyConfig())
                 .addCommands(Help.class, Exec.class, Cmd.class, Do.class, Term.class)
+                .addLoops(MyLoop.class)
                 .build();
     }
 }

@@ -10,10 +10,10 @@ import org.slf4j.LoggerFactory;
 
 import java.io.PrintWriter;
 import java.io.StringWriter;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Objects;
 
 import static ru.zont.dsbot2.tools.ZDSBMessages.*;
 import static ru.zont.dsbot2.tools.ZDSBStrings.*;
@@ -44,6 +44,11 @@ public class ErrorReporter {
                 error.getClass().getName());
         ReportedError re = reportedMap.getOrDefault(identity, null);
 
+        if (re != null && re.count() < 1) {
+            reportedMap.remove(identity);
+            re = null;
+        }
+
         if (logChannel == null) {
             LOG.info("logChannel for guild {} not stated",
                     context.getGuild() == null ? "null" : context.getGuild().getName());
@@ -51,7 +56,7 @@ public class ErrorReporter {
         }
         try {
             if (logChannel != null) {
-                if (re == null || re.count() < 1) {
+                if (re == null) {
                     Message msg = logChannel.sendMessage(getError(klass, error)).complete();
                     re = new ReportedError(msg);
                 } else {
@@ -78,7 +83,7 @@ public class ErrorReporter {
                 }
             } else {
                 LOG.info("for the whole bot, too.");
-                if (re == null || re.count() < 1)
+                if (re == null)
                     re = new ReportedError(null);
                 else re.count();
             }
@@ -107,33 +112,43 @@ public class ErrorReporter {
     }
 
     private static class ReportedError {
-        private final ArrayList<Long> reported;
+        private int reported;
         private Message msg;
         private long upd = 0;
 
         public ReportedError(Message msg) {
             this.msg = msg;
-            reported = new ArrayList<>();
-            reported.add(System.currentTimeMillis());
+            increment();
         }
 
-        private long update() {
+        private void upd() {
             long current = System.currentTimeMillis();
-            if (current - upd >= 2000) {
-                reported.removeIf(l -> current - l > PERIOD);
-                upd = current;
-            }
-            return current;
+            if (current - upd > PERIOD)
+                reported = 0;
+            upd = System.currentTimeMillis();
         }
 
         public void increment() {
-            long current = update();
-            reported.add(current);
+            upd();
+            reported++;
         }
 
         public int count() {
-            update();
-            return reported.size();
+            upd();
+            return reported;
+        }
+
+        @Override
+        public boolean equals(Object o) {
+            if (this == o) return true;
+            if (o == null || getClass() != o.getClass()) return false;
+            ReportedError that = (ReportedError) o;
+            return reported == that.reported && upd == that.upd && msg.getId().equals(that.msg.getId());
+        }
+
+        @Override
+        public int hashCode() {
+            return Objects.hash(reported, upd, msg.getId());
         }
     }
 }
