@@ -31,7 +31,7 @@ public class Commons {
     }
 
     /**
-     * Permission that allows any input with first argument from {@code values} list
+     * Permission that allows any input with first argument **not** from {@code values} list
      * or {@link Member} with {@link Permission#ADMINISTRATOR} or {@link Permission#MANAGE_PERMISSIONS}
      * @param input Input param
      * @param values allowed first argument values
@@ -60,8 +60,12 @@ public class Commons {
         return arg;
     }
 
-    public static long userMentionToID(String mention) {
-        final Matcher m = Pattern.compile("<@!?(\\d+)>").matcher(mention);
+    /**
+     * @param mention Channel, User or Role mention
+     * @return ID
+     */
+    public static long mentionToID(String mention) {
+        final Matcher m = Pattern.compile("<[@#]!?&?(\\d+)>").matcher(mention);
         if (!m.find()) throw new UserInvalidInputException(STR.getString("comms.err.invalid_mention"));
         return Long.parseLong(m.group(1));
     }
