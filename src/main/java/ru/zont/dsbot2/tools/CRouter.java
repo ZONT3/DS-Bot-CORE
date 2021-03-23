@@ -26,7 +26,11 @@ public class CRouter {
     }
 
     public void acceptInput(Input input) {
-        String[] args = input.getArgs();
+        acceptInput(input, true);
+    }
+
+    public void acceptInput(Input input, boolean removeOpts) {
+        String[] args = input.getArgs(removeOpts);
         if (args.length < index + 1)
             throw new UserInvalidInputException(ZDSBStrings.STR.getString("err.insufficient_args"));
         final Case thisCase = map.get(args[index]);

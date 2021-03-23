@@ -11,18 +11,18 @@ import org.apache.commons.cli.ParseException;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.tools.ZDSBStrings;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.zont.dsbot2.commands.ArgumentTokenizer.*;
+import static ru.zont.dsbot2.commands.ArgumentTokenizer.tokenize;
 
 public class Input {
     private final MessageReceivedEvent event;
     private final ZDSBot.GuildContext gc;
     private final String content;
     private String[] args = null;
+    private String[] argsFull = null;
 
     public Input(MessageReceivedEvent event, ZDSBot.GuildContext gc, String content) {
         this.event = event;
@@ -63,12 +63,18 @@ public class Input {
     }
 
     public String[] getArgs() {
-        if (args == null) {
+        return getArgs(true);
+    }
+
+    public String[] getArgs(boolean removeOpts) {
+        if (args == null && removeOpts || argsFull == null && !removeOpts) {
             List<String> argsList = tokenize(getContentRaw());
-            argsList.removeIf(s -> s.startsWith("-") && !s.startsWith("---") || s.startsWith("\"-") && !s.startsWith("\"---"));
-            args = argsList.toArray(new String[0]);
+            if (removeOpts) {
+                argsList.removeIf(s -> s.startsWith("-") && !s.startsWith("---") || s.startsWith("\"-") && !s.startsWith("\"---"));
+                args = argsList.toArray(new String[0]);
+            } else argsFull = argsList.toArray(new String[0]);
         }
-        return args;
+        return removeOpts ? args : argsFull;
     }
 
     public CommandLine getCommandLine(Options options) {
@@ -87,7 +93,11 @@ public class Input {
     }
 
     public String getArg(int i) {
-        String[] args = getArgs();
+        return getArg(i, true);
+    }
+
+    public String getArg(int i, boolean removeOpts) {
+        String[] args = getArgs(removeOpts);
         if (i >= args.length) return null;
         return args[i];
     }
@@ -125,7 +135,11 @@ public class Input {
     }
 
     public void assertArgCount(int required) {
-        if (getArgs().length < required)
+        assertArgCount(required, true);
+    }
+
+    public void assertArgCount(int required, boolean removeOpts) {
+        if (getArgs(removeOpts).length < required)
             throw new UserInvalidInputException(ZDSBStrings.STR.getString("err.insufficient_args"));
     }
 }
