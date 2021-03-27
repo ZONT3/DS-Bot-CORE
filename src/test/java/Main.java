@@ -14,6 +14,7 @@ import ru.zont.dsbot2.commands.implement.exec.Term;
 import ru.zont.dsbot2.loops.LoopAdapter;
 
 import javax.security.auth.login.LoginException;
+import java.util.concurrent.BlockingDeque;
 
 
 public class Main {
@@ -154,11 +155,6 @@ public class Main {
     }
 
     public static void main(String[] args) throws LoginException {
-        ZDSBot bot = new ZDSBotBuilder(args[0])
-                .defaultSetup()
-                .setConfig(new MyConfig())
-                .addCommands(Help.class, Exec.class, Cmd.class, Do.class, Term.class)
-                .addLoops(MyLoop.class)
-                .build();
+        BlockingDeque
     }
 }

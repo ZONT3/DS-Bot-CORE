@@ -79,6 +79,12 @@ public class Data<T extends Serializable> {
         return res;
     }
 
+    public void set(T newValue) {
+        data = newValue;
+        commit();
+    }
+
+
     public interface Callback<A, R> {
         R call(A arg);
     }
