@@ -153,8 +153,4 @@ public class Main {
             super.channel_log = channel_log;
         }
     }
-
-    public static void main(String[] args) throws LoginException {
-        BlockingDeque
-    }
 }

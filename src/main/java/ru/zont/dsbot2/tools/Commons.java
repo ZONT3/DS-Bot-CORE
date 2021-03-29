@@ -1,12 +1,18 @@
 package ru.zont.dsbot2.tools;
 
+import com.sun.net.httpserver.HttpExchange;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import org.apache.commons.io.IOUtils;
+import org.jetbrains.annotations.Nullable;
 import ru.zont.dsbot2.ErrorReporter;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
 
+import java.io.IOException;
+import java.io.OutputStream;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Matcher;
@@ -100,5 +106,33 @@ public class Commons {
         } catch (Throwable throwable) {
             ErrorReporter.inst().reportError(context, clazz, throwable);
         }
+    }
+
+    public static void httpResponse(HttpExchange exchange, String response, int code) throws IOException {
+        exchange.sendResponseHeaders(code, response.getBytes().length);
+        OutputStream os = exchange.getResponseBody();
+        os.write(response.getBytes());
+        os.close();
+    }
+
+    /**
+     * @param exchange Input exchange (must be open)
+     * @return Content, that must (but may not) be a JSON <br/>or {@code null} if {@code Content-Type != application/json} or {@code method != POST}
+     * @throws IOException exception on retrieving request body
+     */
+    @Nullable
+    public static String requireJson(HttpExchange exchange) throws IOException {
+        if (!"post".equalsIgnoreCase(exchange.getRequestMethod())) {
+            httpResponse(exchange, "Only POST method is acceptable", 400);
+            return null;
+        }
+
+        final List<String> contentType = exchange.getRequestHeaders().get("Content-type");
+        if (contentType.size() < 1 || !contentType.contains("application/json")) {
+            httpResponse(exchange, "Content-type should be JSON", 400);
+            return null;
+        }
+
+        return IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
     }
 }
