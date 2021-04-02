@@ -1,6 +1,7 @@
 package ru.zont.dsbot2.commands.implement;
 
 import net.dv8tion.jda.api.EmbedBuilder;
+import net.dv8tion.jda.api.MessageBuilder;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Guild;
 import net.dv8tion.jda.api.entities.Member;
@@ -29,12 +30,13 @@ public class Say extends CommandAdapter {
         Options options = new Options();
         options.addOption("t", "title", true, STR.getString("comms.say.opt.title"));
         options.addOption("c", "color", true, STR.getString("comms.say.opt.title"));
+        options.addOption("m", "message", true, STR.getString("comms.say.opt.title"));
 
         MessageReceivedEvent event = input.getEvent();
         String content;
         String contentRaw = input.getContentRaw();
         if (!contentRaw.matches("\\d+ .*"))
-            content = contentRaw.replaceFirst(".+?(?=\\d{7,})", "");
+            content = contentRaw.replaceFirst(".+?(?<![@&#])(?<!!)(?<!\\d)(?=\\d{7,})", "");
         else content = contentRaw;
         String[] s = content.split(" ");
         if (s.length < 2) throw new UserInvalidInputException(STR.getString("err.incorrect_args"));
@@ -52,6 +54,7 @@ public class Say extends CommandAdapter {
 
         CommandLine cli = input.getCommandLine(options, true);
         if (cli.hasOption("t") || cli.hasOption("c")) {
+            MessageBuilder mb = new MessageBuilder();
             EmbedBuilder builder = new EmbedBuilder();
             if (cli.hasOption("t"))
                 builder.setTitle(cli.getOptionValue("t"));
@@ -67,8 +70,11 @@ public class Say extends CommandAdapter {
                 builder.setColor(Integer.parseInt(clr, 16));
             }
 
+            if (cli.hasOption("m"))
+                mb.setContent(cli.getOptionValue("m"));
+
             builder.setDescription(text);
-            channel.sendMessage(builder.build()).complete();
+            channel.sendMessage(mb.setEmbed(builder.build()).build()).complete();
         } else channel.sendMessage(text).complete();
     }
 
