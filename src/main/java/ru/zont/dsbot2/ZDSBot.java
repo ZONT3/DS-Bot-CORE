@@ -10,6 +10,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.loops.LoopAdapter;
+import ru.zont.dsbot2.parser.ZParser;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -17,6 +18,7 @@ import java.util.List;
 import java.util.function.Predicate;
 import java.util.stream.Stream;
 
+@SuppressWarnings("rawtypes")
 public class ZDSBot {
     private static final Logger LOG = LoggerFactory.getLogger(ZDSBot.class);
 
@@ -25,15 +27,21 @@ public class ZDSBot {
     private final Config globalConfig;
     private final ArrayList<Class<? extends CommandAdapter>> commandAdapters;
     private final ArrayList<Class<? extends LoopAdapter>> loopAdapters;
+    private final ArrayList<Class<? extends ZParser>> parserAdapters;
     private final ArrayList<GuildContext> guilds = new ArrayList<>();
     private GuildContext voidGuild = null;
 
-    ZDSBot(JDA jda, Options options, Config defaultConfig, ArrayList<Class<? extends CommandAdapter>> commandAdapters, ArrayList<Class<? extends LoopAdapter>> loopAdapters) {
+    ZDSBot(JDA jda, Options options, Config defaultConfig,
+           ArrayList<Class<? extends CommandAdapter>> commandAdapters,
+           ArrayList<Class<? extends LoopAdapter>> loopAdapters,
+           ArrayList<Class<? extends ZParser>> parserAdapters
+    ) {
         this.jda = jda;
         this.options = options;
         this.globalConfig = Config.getGlobal(defaultConfig);
         this.commandAdapters = commandAdapters;
         this.loopAdapters = loopAdapters;
+        this.parserAdapters = parserAdapters;
         jda.addEventListener(new MainDispatcher(this));
     }
 
@@ -89,12 +97,7 @@ public class ZDSBot {
      * @return A text channel, or {@code null} if not found
      */
     public TextChannel getTChannel(String id) {
-        for (Guild guild: jda.getGuilds()) {
-            TextChannel channel = guild.getTextChannelById(id);
-            if (channel != null) return channel;
-        }
-
-        return null;
+        return jda.getTextChannelById(id);
     }
 
     /**
@@ -119,6 +122,7 @@ public class ZDSBot {
     public class GuildContext {
         private final CommandAdapter[] commandAdapters;
         private final LoopAdapter[] loopAdapters;
+        private final ZParser[] parsers;
         private final Guild guild;
         private final Config config;
 
@@ -130,15 +134,28 @@ public class ZDSBot {
 
             this.commandAdapters = new CommandAdapter[commandAdapters.size()];
             this.loopAdapters = new LoopAdapter[loopAdapters.size()];
-            for (int i = 0; i < commandAdapters.size() || i < loopAdapters.size(); i++) {
+            this.parsers = new ZParser[parserAdapters.size()];
+            for (int i = 0; i < commandAdapters.size() || i < loopAdapters.size() || i < parserAdapters.size(); i++) {
                 Class<? extends CommandAdapter> commandAdapter = commandAdapters.size() > i ? commandAdapters.get(i) : null;
                 Class<? extends LoopAdapter> loopAdapter = loopAdapters.size() > i ? loopAdapters.get(i) : null;
+                Class<? extends ZParser> parser = parserAdapters.size() > i ? parserAdapters.get(i) : null;
                 try {
                     if (commandAdapter != null)
                         this.commandAdapters[i] = commandAdapter.getDeclaredConstructor(GuildContext.class)
                               .newInstance(this);
+                } catch (Throwable e) {
+                    ErrorReporter.printStackTrace(e, getClass());
+                }
+                try {
                     if (loopAdapter != null)
                         this.loopAdapters[i] = loopAdapter.getDeclaredConstructor(GuildContext.class)
+                              .newInstance(this);
+                } catch (Throwable e) {
+                    ErrorReporter.printStackTrace(e, getClass());
+                }
+                try {
+                    if (guild == null && parser != null)
+                        this.parsers[i] = parser.getDeclaredConstructor(GuildContext.class)
                               .newInstance(this);
                 } catch (Throwable e) {
                     ErrorReporter.printStackTrace(e, getClass());
@@ -197,6 +214,10 @@ public class ZDSBot {
 
         public LoopAdapter[] getLoops() {
             return loopAdapters;
+        }
+
+        public ZParser[] getParsers() {
+            return parsers;
         }
 
         @Nullable

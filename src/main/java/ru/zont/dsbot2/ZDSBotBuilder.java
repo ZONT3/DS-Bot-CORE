@@ -6,16 +6,19 @@ import net.dv8tion.jda.api.utils.ChunkingFilter;
 import net.dv8tion.jda.api.utils.MemberCachePolicy;
 import ru.zont.dsbot2.commands.CommandAdapter;
 import ru.zont.dsbot2.loops.LoopAdapter;
+import ru.zont.dsbot2.parser.ZParser;
 
 import javax.security.auth.login.LoginException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
+@SuppressWarnings("rawtypes")
 public class ZDSBotBuilder {
     private final JDABuilder jdaBuilder;
     private final ArrayList<Class<? extends CommandAdapter>> commands = new ArrayList<>();
     private final ArrayList<Class<? extends LoopAdapter>> loops = new ArrayList<>();
+    private final ArrayList<Class<? extends ZParser>> parsers = new ArrayList<>();
     private final ZDSBot.Options options = new ZDSBot.Options();
     private Config config;
 
@@ -38,7 +41,7 @@ public class ZDSBotBuilder {
     }
 
     public ZDSBot build() throws LoginException {
-        return new ZDSBot(jdaBuilder.build(), options, config, commands, loops);
+        return new ZDSBot(jdaBuilder.build(), options, config, commands, loops, parsers);
     }
 
     /**
@@ -79,6 +82,12 @@ public class ZDSBotBuilder {
     @SafeVarargs
     public final ZDSBotBuilder addLoops(Class<? extends LoopAdapter>... loops) {
         Collections.addAll(this.loops, loops);
+        return this;
+    }
+
+    @SafeVarargs
+    public final ZDSBotBuilder addParsers(Class<? extends ZParser>... parsers) {
+        Collections.addAll(this.parsers, parsers);
         return this;
     }
 
