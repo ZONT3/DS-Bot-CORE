@@ -3,8 +3,12 @@ package ru.zont.dsbot2.tools;
 import com.sun.net.httpserver.HttpExchange;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
+import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import org.apache.commons.io.IOUtils;
 import org.jetbrains.annotations.Nullable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.zont.dsbot2.ErrorReporter;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.Input;
@@ -18,9 +22,11 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import static ru.zont.dsbot2.tools.ZDSBStrings.*;
+import static ru.zont.dsbot2.tools.ZDSBStrings.STR;
 
 public class Commons {
+    private static final Logger LOG = LoggerFactory.getLogger(Commons.class);
+
     public static boolean isWindows() {
         return (System.getProperty("os.name").toLowerCase().contains("win"));
     }
@@ -134,5 +140,23 @@ public class Commons {
         }
 
         return IOUtils.toString(exchange.getRequestBody(), StandardCharsets.UTF_8);
+    }
+
+    /**
+     * Removes every message in text channel.
+     * Exceptions allowed
+     * @param except list of message IDs to except
+     * @param channel
+     */
+    public static void clearTextChannel(MessageChannel channel, List<String> except) {
+        if (channel == null) {
+            LOG.warn("Tried to clear NULL channel");
+            return;
+        }
+        for (Message msg: channel.getHistory().retrievePast(100).complete()) {
+            if (except.parallelStream().anyMatch(s -> s.equals(msg.getId())))
+                continue;
+            msg.delete().queue();
+        }
     }
 }
