@@ -220,6 +220,23 @@ public class ZDSBot {
             return parsers;
         }
 
+        public void tickLoop(Class<? extends LoopAdapter> clazz) {
+            tickLoop(clazz, true);
+        }
+
+        public void tickLoop(Class<? extends LoopAdapter> clazz, boolean consumeNext) {
+            for (LoopAdapter adapter: loopAdapters) {
+                if (clazz.isInstance(adapter)) {
+                    try {
+                        adapter.loop();
+
+                    } catch (Throwable throwable) {
+                        ErrorReporter.inst().reportError(this, adapter.getClass(), throwable);
+                    }
+                }
+            }
+        }
+
         @Nullable
         public Guild getGuild() {
             return guild;

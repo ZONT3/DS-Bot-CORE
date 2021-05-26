@@ -28,6 +28,7 @@ public class ZDSBStrings {
 
     public static String trimSnippet(String original, int count) {
         int length = original.length();
+        if (length < count) return original;
         return original.substring(0, Math.min(count, length)) + "...";
     }
 }

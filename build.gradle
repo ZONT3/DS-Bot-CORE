@@ -26,6 +26,8 @@ dependencies {
     // https://mvnrepository.com/artifact/commons-cli/commons-cli
     implementation group: 'commons-cli', name: 'commons-cli', version: '1.4'
 
+    // https://mvnrepository.com/artifact/commons-httpclient/commons-httpclient
+    implementation group: 'commons-httpclient', name: 'commons-httpclient', version: '3.1'
 
 }
 

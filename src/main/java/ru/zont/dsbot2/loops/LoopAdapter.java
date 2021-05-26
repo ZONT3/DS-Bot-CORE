@@ -9,6 +9,7 @@ import java.util.TimerTask;
 public abstract class LoopAdapter extends TimerTask {
 
     private final ZDSBot.GuildContext context;
+    private Timer timer;
 
     public LoopAdapter(ZDSBot.GuildContext context) {
         this.context = context;
@@ -17,10 +18,16 @@ public abstract class LoopAdapter extends TimerTask {
         if (!runInLocal() && context.getGuild() != null) return;
 
         prepare();
+        setupTimer(true);
+    }
+
+    private void setupTimer(boolean instant) {
         long period = getPeriod();
         if (period <= 0) return;
-        Timer loop = new Timer("Loop " + getClass().getSimpleName(), true);
-        loop.schedule(this, 0, period);
+
+        if (timer != null) timer.cancel();
+        timer = new Timer("Loop " + getClass().getSimpleName(), true);
+        timer.schedule(this, instant ? 0 : period, period);
     }
 
     @Override
@@ -30,6 +37,10 @@ public abstract class LoopAdapter extends TimerTask {
         } catch (Throwable error) {
             ErrorReporter.inst().reportError(context, getClass(), error);
         }
+    }
+
+    public final void consumeNext() {
+        setupTimer(false);
     }
 
     protected final ZDSBot.GuildContext getContext() {
