@@ -3,6 +3,7 @@ package ru.zont.dsbot2.commands.implement;
 import net.dv8tion.jda.api.Permission;
 import net.dv8tion.jda.api.entities.Member;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageHistory;
 import net.dv8tion.jda.api.entities.TextChannel;
 import ru.zont.dsbot2.ZDSBot;
 import ru.zont.dsbot2.commands.CommandAdapter;
@@ -10,6 +11,7 @@ import ru.zont.dsbot2.commands.Input;
 import ru.zont.dsbot2.commands.UserInvalidInputException;
 import ru.zont.dsbot2.tools.ZDSBMessages;
 
+import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,8 +51,12 @@ public class Clear extends CommandAdapter {
         final boolean b = toClear == inputChannel;
         if (b) input.getMessage().delete().complete();
         else ZDSBMessages.addOK(input.getEvent().getMessage());
-        for (Message message: toClear.getHistory().retrievePast(amount).complete())
-            message.delete().queue();
+
+        final MessageHistory history = toClear.getHistory();
+        final ArrayList<Message> msg = new ArrayList<>();
+        for (int i = amount; i > 0; i -= 100)
+            msg.addAll(history.retrievePast(Math.min(i, 100)).complete());
+        for (Message message: msg) message.delete().queue();
     }
 
     @Override

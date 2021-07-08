@@ -127,7 +127,7 @@ public class Exec extends CommandAdapter {
     }
 
     public synchronized void newHandler(SubprocessListener sl, ExecHandler.Parameters params, MessageChannel channel) {
-        processes.put(nextPid, new ExecHandler(sl, nextPid, channel, params));
+        processes.put(nextPid, new ExecHandler(getContext(), sl, nextPid, channel, params));
         nextPid++;
     }
 

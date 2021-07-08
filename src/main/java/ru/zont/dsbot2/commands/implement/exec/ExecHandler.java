@@ -4,8 +4,11 @@ import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
 import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
+import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
-import ru.zont.dsbot2.tools.ZDSBMessages;
+import ru.zont.dsbot2.ErrorReporter;
+import ru.zont.dsbot2.ZDSBot;
+import ru.zont.dsbot2.tools.ZDSBStrings;
 
 import java.time.Instant;
 import java.util.ArrayList;
@@ -23,6 +26,7 @@ class ExecHandler {
     public static final int COLOR_OUT = 0x311b92;
     public static final int COLOR_STDERR = 0xBB0000;
 
+    private final ZDSBot.GuildContext context;
     private final MessageChannel workingChannel;
     private final long started = System.currentTimeMillis();
 
@@ -41,7 +45,8 @@ class ExecHandler {
         Consumer<Void> onVeryFinish = null;
     }
 
-    public ExecHandler(@NotNull SubprocessListener sl, long pid, @NotNull MessageChannel workingChannel, Parameters params) {
+    public ExecHandler(ZDSBot.GuildContext context, @NotNull SubprocessListener sl, long pid, @NotNull MessageChannel workingChannel, Parameters params) {
+        this.context = context;
         this.workingChannel = workingChannel;
         this.params = params;
         this.sl = sl;
@@ -69,10 +74,10 @@ class ExecHandler {
         workingChannel.sendMessage(new EmbedBuilder()
                 .setColor(code == 0 ? COLOR_END_SUCC : COLOR_END_FAIL)
                 .setTitle(String.format("Process [%d] finished", pid))
-                .setDescription(String.format(
-                        "Name: %s\n" +
-                                "Duration: %d.%03ds\n" +
-                                "Exit code: `%d`",
+                .setDescription(String.format("""
+                                Name: %s
+                                Duration: %d.%03ds
+                                Exit code: `%d`""",
                         name, sec, millis % 1000, code
                 )).build()).queue();
     }
@@ -150,7 +155,7 @@ class ExecHandler {
             }
         } catch (Exception e) {
             e.printStackTrace();
-            printError(workingChannel, "Error in ExecHandler", describeException(e));
+            ErrorReporter.inst().reportError(workingChannel, context, getClass(), e,"Error in ExecHandler");
         }
     }
 
@@ -199,8 +204,25 @@ class ExecHandler {
     }
 
     private boolean checkWChPrint() {
-        if (workingChannel == null) {
-            new NullPointerException("Working channel").printStackTrace();
+        try {
+            if (workingChannel == null) throw new NullPointerException("Working channel");
+            for (OutList list: List.of(stdoutMessages, stderrMessages)) {
+                final ArrayList<OutListEntry> toRm = new ArrayList<>();
+                for (OutListEntry e: list) {
+                    try {
+                        final TextChannel channel = e.m.getTextChannel();
+                        final Message msg = channel.retrieveMessageById(e.m.getId()).complete();
+                        assert msg.getEmbeds().size() > 0;
+                    } catch (Throwable t) {
+                        t.printStackTrace();
+                        toRm.add(e);
+                    }
+                }
+                list.removeAll(toRm);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            sl.terminate();
             return true;
         }
         return false;

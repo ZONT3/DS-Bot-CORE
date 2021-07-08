@@ -2,6 +2,7 @@ package ru.zont.dsbot2;
 
 import net.dv8tion.jda.api.EmbedBuilder;
 import net.dv8tion.jda.api.entities.Message;
+import net.dv8tion.jda.api.entities.MessageChannel;
 import net.dv8tion.jda.api.entities.MessageEmbed;
 import net.dv8tion.jda.api.entities.TextChannel;
 import org.jetbrains.annotations.NotNull;
@@ -34,14 +35,22 @@ public class ErrorReporter {
     }
 
     public synchronized void reportError(ZDSBot.GuildContext context, Class<?> klass, Throwable error) {
-        TextChannel logChannel = context.getTChannel(context.getConfig().channel_log.get());
+        MessageChannel logChannel = context.getTChannel(context.getConfig().channel_log.get());
         reportError(logChannel, context, klass, error);
     }
 
-    public synchronized void reportError(TextChannel logChannel, ZDSBot.GuildContext context, Class<?> klass, Throwable error) {
+    public synchronized void reportError(MessageChannel logChannel, ZDSBot.GuildContext context, Class<?> klass, Throwable error) {
+        reportError(logChannel, context, klass, error, STR.getString("err.unexpected"));
+    }
+
+    public synchronized void reportError(MessageChannel logChannel, ZDSBot.GuildContext context, Class<?> klass, Throwable error, String title) {
         String identity = String.format("%s::%s",
                 klass.getName(),
                 error.getClass().getName());
+        reportError(logChannel, context, klass, error, identity, title);
+    }
+
+    public synchronized void reportError(MessageChannel logChannel, ZDSBot.GuildContext context, Class<?> klass, Throwable error, String identity, String title) {
         ReportedError re = reportedMap.getOrDefault(identity, null);
 
         if (re != null && re.count() < 1) {
@@ -57,14 +66,14 @@ public class ErrorReporter {
         try {
             if (logChannel != null) {
                 if (re == null) {
-                    Message msg = logChannel.sendMessage(getError(klass, error)).complete();
+                    Message msg = logChannel.sendMessage(getError(klass, error, title)).complete();
                     re = new ReportedError(msg);
                 } else {
                     try { re.msg = logChannel.retrieveMessageById(re.msg.getId()).complete(); }
                     catch (Throwable e) { ErrorReporter.printStackTrace(e, getClass()); re.msg = null; }
                     List<MessageEmbed> embeds;
                     if (re.msg == null || (embeds = re.msg.getEmbeds()).size() <= 0)
-                        embeds = Collections.singletonList(getError(klass, error));
+                        embeds = Collections.singletonList(getError(klass, error, title));
 
                     re.increment();
                     MessageEmbed embed = new EmbedBuilder(
@@ -105,9 +114,9 @@ public class ErrorReporter {
     }
 
     @NotNull
-    private static MessageEmbed getError(Class<?> klass, Throwable error) {
+    private static MessageEmbed getError(Class<?> klass, Throwable error, String title) {
         return error(
-                STR.getString("err.unexpected"),
+                title,
                 describeException(klass, error));
     }
 
